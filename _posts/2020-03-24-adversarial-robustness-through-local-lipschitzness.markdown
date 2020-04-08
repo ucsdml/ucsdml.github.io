@@ -5,6 +5,7 @@ title:  "Adversarial Robustness Through Local Lipschitzness"
 date:   2020-03-24 13:49:00 -0700
 categories: jekyll update
 tags: adversarial
+excerpt: This is an example excerpt.
 ---
 
 Neural networks are very susceptible to adversarial examples, a.k.a., small perturbations of normal inputs that cause a classifier to output the wrong label.
