@@ -1,0 +1,13 @@
+---
+layout: post
+mathjax: true
+title:  "Temp"
+date:   2020-03-24 13:49:00 -0700
+categories: jekyll update
+tags: adversarial
+excerpt: This is an example excerpt.
+---
+
+Neural networks are very susceptible to adversarial examples, a.k.a., small perturbations of normal inputs that cause a classifier to output the wrong label.
+The standard defense against adversarial examples is [Adversarial Training](https://arxiv.org/abs/1706.06083), which trains a classifier using adversarial examples close to training inputs.
+This improves test accuracy on adversarial examples, but it often lowers clean accuracy, sometimes by a lot. 
