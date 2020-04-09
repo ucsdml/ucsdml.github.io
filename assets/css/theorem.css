@@ -43,3 +43,33 @@
     font-weight: bold;
     font-style: normal;
 }
+.remark {
+    display: block;
+    margin: 12px 0;
+    font-style: normal;
+}
+.remark:before {
+    content: "Remark.";
+    font-weight: bold;
+    font-style: normal;
+}
+.proposition {
+    display: block;
+    margin: 12px 0;
+    font-style: normal;
+}
+.proposition:before {
+    content: "Proposition.";
+    font-weight: bold;
+    font-style: normal;
+}
+.corollary {
+    display: block;
+    margin: 12px 0;
+    font-style: normal;
+}
+.corollary:before {
+    content: "Corollary.";
+    font-weight: bold;
+    font-style: normal;
+}
