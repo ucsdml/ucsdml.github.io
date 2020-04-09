@@ -1,0 +1,71 @@
+---
+layout: post
+mathjax: true
+categories: jekyll update
+tags: adversarial
+title:  "Your title"
+date:   2020-04-09 13:49:00 -0700
+excerpt: This is an example excerpt.
+---
+
+https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
+
+Hello world.
+
+[Link1](https://example.com)
+
+### Section
+#### SubSection
+
+{:refdef: style="text-align: center;"}
+<figure class="image">
+  <img src="/assets/2020-03-24-local-lip/spiral.png" width="40%" style="margin: 0 auto">
+  <figcaption>
+    Sample caption
+  </figcaption>
+</figure>
+{:refdef}
+
+$$
+\frac{1}{n}\sum_{i=1}^n\max_{x_i'\in\mathsf{Ball}(x_i,\epsilon)}\frac{|f(x_i)-f(x_i')|}{\|x_i-x_i'\|_\infty}.
+$$
+
+<div class="definition">
+	A function $f: \mathcal{X} \rightarrow \mathcal{R}$ is $L$-Locally Lipschitz in a radius $r$ around a point $x \in \mathcal{X}$, if for all $x'$ such that $d(x,x') \leq r$, we have
+	$ |f(x) - f(x')| \leq L \cdot d(x, x').$
+</div>
+
+Bullets
+- item 1
+- item 2
+- item 3
+
+<div class="theorem">
+If the data is $2r$-separated, then there always exists a classifier that is perfectly robust and accurate, which is based on a function with local Lipschitz constant $1/r$.
+</div>
+
+<div class="proof">
+If the data is $2r$-separated, then there always exists a classifier that is perfectly robust and accurate, which is based on a function with local Lipschitz constant $1/r$.
+</div>
+
+<div class="lemma">
+If the data is $2r$-separated, then there always exists a classifier that is perfectly robust and accurate, which is based on a function with local Lipschitz constant $1/r$.
+</div>
+
+<div class="remark">
+If the data is $2r$-separated, then there always exists a classifier that is perfectly robust and accurate, which is based on a function with local Lipschitz constant $1/r$.
+</div>
+
+<div class="proposition">
+If the data is $2r$-separated, then there always exists a classifier that is perfectly robust and accurate, which is based on a function with local Lipschitz constant $1/r$.
+</div>
+
+<div class="corollary">
+If the data is $2r$-separated, then there always exists a classifier that is perfectly robust and accurate, which is based on a function with local Lipschitz constant $1/r$.
+</div>
+
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
