@@ -5,6 +5,7 @@ title:  "Adversarial Robustness Through Local Lipschitzness"
 date:   2020-03-24 13:49:00 -0700
 categories: jekyll update
 tags: adversarial
+author: Cyrus Rashtchian and Yao-Yuan Yang
 excerpt: This is an example excerpt.
 ---
 
@@ -51,6 +52,22 @@ Previous works ([1](https://arxiv.org/abs/1811.05381), [2](https://arxiv.org/abs
 </div>
 
 Our main theoretical result says that if the two classes are separated -- in the sense that points from different classes are distance at least $2r$ apart, then there exists a $1/r$-locally Lipschitz function that  is both robust to perturbations of distance $r$ and also 100% accurate.
+
+For many real world data, the separation assumption in fact holds.
+Take Cifar-10 dataset as an example.
+The following figure is the histogram of the $L_\infty$ distance of each training example to its closest differently-labeled example.
+From the figure we can see that the dataset is $0.21$ separated, indicating that there exists a solution that's both robust and accurate with a perturbation distance up to $0.105$.
+However, the commonly seen perturbation distance used Cifar-10 is $0.031$.
+
+{:refdef: style="text-align: center;"}
+<figure class="image">
+  <img src="/assets/2020-03-24-local-lip/cifar10_linf_hist.png" width="40%" style="margin: 0 auto">
+  <figcaption>
+    Function and resulting classifier from our theorem.
+    The prediction is confident most of the time, and it gradually changes between classes (orange to blue).
+  </figcaption>
+</figure>
+{:refdef}
 
 <div class="theorem">
 If the data is $2r$-separated, then there always exists a classifier that is perfectly robust and accurate, which is based on a function with local Lipschitz constant $1/r$.
