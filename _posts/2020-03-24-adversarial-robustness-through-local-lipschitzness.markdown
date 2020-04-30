@@ -63,8 +63,7 @@ However, the commonly seen perturbation distance used Cifar-10 is $0.031$.
 <figure class="image">
   <img src="/assets/2020-03-24-local-lip/cifar10_linf_hist.png" width="40%" style="margin: 0 auto">
   <figcaption>
-    Function and resulting classifier from our theorem.
-    The prediction is confident most of the time, and it gradually changes between classes (orange to blue).
+    The $L_\infty$ distance of each training example to its closest differently-labeled example for the Cifar-10 dataset.
   </figcaption>
 </figure>
 {:refdef}
