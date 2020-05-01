@@ -101,7 +101,7 @@ $$
 $$
 
 The benefit is that we want the function to be smooth on average, even though there may be some outliers.
-One of the best methods for adversarial examples is (TRADES)[https://arxiv.org/abs/1901.08573], which encourages local Lipschitzness by minimizing the following loss function:
+One of the best methods for adversarial examples is [TRADES](https://arxiv.org/abs/1901.08573), which encourages local Lipschitzness by minimizing the following loss function:
 
 $$
 \min_{f} \mathbb{E} \Big\{\mathcal{L}(f(X),Y)+\beta\max_{X'\in\mathsf{Ball}(X,\epsilon)} \mathcal{L}(f(X),f(X'))\Big\}.
