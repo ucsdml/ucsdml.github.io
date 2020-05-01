@@ -30,7 +30,7 @@ Since we care about robustness, we actually want to move as slowly as possible f
 So why do adversarial perturbations lead to a high error rate? This is a very active area of research, and there's no easy answer. 
 As a step towards a better understanding, we present theoretical results on achieving perfect accuracy and robustness by using a locally smooth function. We also explore how well this works in practice. 
 
-As a motivating example, consider a simple 2D binary classification dataset. The goal is to find a decision boundary that has 100\% training accuracy without passing closely to any individual input. 
+As a motivating example, consider a simple 2D binary classification dataset. The goal is to find a decision boundary that has 100% training accuracy without passing closely to any individual input. 
 The orange curve in the following picture shows such a boundary. In contrast, the black curve comes very close to some data points. Even though both boundaries correctly classify all of the examples, the black curve is susceptible to adversarial examples, while the orange curve is not. 
 
 {:refdef: style="text-align: center;"}
@@ -51,21 +51,24 @@ Previous works ([1](https://arxiv.org/abs/1811.05381), [2](https://arxiv.org/abs
 	$ |f(x) - f(x')| \leq L \cdot d(x, x').$
 </div>
 
+Previous work by [Hein and Andriushchenko](https://arxiv.org/abs/1705.08475) has shown that local Lipschitzness indeed guarantees robustness.
+In fact, variants of Lipschitzness have been the main tool in certifying robustness with [randomized smoothing](https://arxiv.org/abs/1902.02918) as well.
+However, we are the first to identify a natural condition (data separation) that ensures both robustness and high test accuracy.
+
 Our main theoretical result says that if the two classes are separated -- in the sense that points from different classes are distance at least $2r$ apart, then there exists a $1/r$-locally Lipschitz function that  is both robust to perturbations of distance $r$ and also 100% accurate.
 
 For many real world data, the separation assumption in fact holds.
-Take Cifar-10 dataset as an example.
-The following figure is the histogram of the $L_\infty$ distance of each training example to its closest differently-labeled example.
+Take CIFAR-10 dataset as an example.
+We removed a handful of images that appeared twice in the dataset with different labels.
+The following figure is the histogram of the $\ell_\infty$ distance of each training example to its closest differently-labeled example.
 From the figure we can see that the dataset is $0.21$ separated, indicating that there exists a solution that's both robust and accurate with a perturbation distance up to $0.105$.
-However, the commonly seen perturbation distance used Cifar-10 is $0.031$.
+Perhaps surprisingly, most work on adversarial examples considers small perturbations of size $0.031$ for CIFAR-10 and $0.031$ for Restricted ImageNet, which are both much less than the observed separation in these histograms.
 
 {:refdef: style="text-align: center;"}
-<figure class="image">
-  <img src="/assets/2020-03-24-local-lip/cifar10_linf_hist.png" width="40%" style="margin: 0 auto">
-  <figcaption>
-    The $L_\infty$ distance of each training example to its closest differently-labeled example for the Cifar-10 dataset.
-  </figcaption>
-</figure>
+<div>
+  <img src="/assets/2020-03-24-local-lip/cifar10_linf_hist.png" width="48%" style="margin: 0 auto">
+  <img src="/assets/2020-03-24-local-lip/resImgNet_linf_hist.png" width="48%" style="margin: 0 auto">
+</div>
 {:refdef}
 
 <div class="theorem">
@@ -118,20 +121,10 @@ and [Gradient Regularization (GR)](https://arxiv.org/abs/1905.11468).
 
 ### Comparing five different training methods
 
-Here we provide experimental results for MNIST and CIFAR-10. See our paper for other datasets (SVHN and Restricted ImageNet).
+Here we provide experimental results for CIFAR-10 and Restricted ImageNet. See our paper for other datasets (MNIST and SVHN).
 
-methods           | train accuracy | test accuracy |  adv test accuracy | test lipschitz
------------------ | ------- | ------- | ----------- | ----------
-Natural           |  100.00 |   99.20 |       59.83 |      67.25
-GR                |   99.99 |   99.29 |       91.03 |      26.05
-LLR               |  100.00 |   99.43 |       92.14 |      30.44
-AT                |   99.98 |   99.31 |       97.21 |       8.84
-TRADES($\beta$=1) |   99.81 |   99.26 |       96.60 |       9.69
-TRADES($\beta$=3) |   99.21 |   98.96 |       96.66 |       7.83
-TRADES($\beta$=6) |   97.50 |   97.54 |       93.68 |       2.87
-
-methods           | train accuracy | test accuracy |  adv test accuracy | test lipschitz
------------------ | ------- | ------- | ----------- | ----------
+CIFAR-10          | train accuracy | test accuracy |  adv test accuracy | test lipschitz
+:---------------- | :-----: | :-----: | :---------: | :--------:
 Natural           |  100.00 |   93.81 |        0.00 |     425.71
 GR                |   94.90 |   80.74 |       21.32 |      28.53
 LLR               |  100.00 |   91.44 |       22.05 |      94.68
@@ -139,6 +132,18 @@ AT                |   99.84 |   83.51 |       43.51 |      26.23
 TRADES($\beta$=1) |   99.76 |   84.96 |       43.66 |      28.01
 TRADES($\beta$=3) |   99.78 |   85.55 |       46.63 |      22.42
 TRADES($\beta$=6) |   98.93 |   84.46 |       48.58 |      13.05
+
+
+Restricted ImageNet | train accuracy | test accuracy |  adv test accuracy | test lipschitz
+:---------------- | :-----: | :-----: | :---------: | :--------:
+Natural           |   97.72 |   93.47 |        7.89 |   32228.51
+GR                |   91.12 |   88.51 |       62.14 |     886.75
+LLR               |   98.76 |   93.44 |       52.65 |    4795.66
+AT                |   96.22 |   90.33 |       82.25 |     287.97
+TRADES($\beta$=1) |   97.39 |   92.27 |       79.90 |    2144.66
+TRADES($\beta$=3) |   95.74 |   90.75 |       82.28 |     396.67
+TRADES($\beta$=6) |   93.34 |   88.92 |       82.13 |     200.90
+
 
 For both datasets, we see correlation between accuracy, Lipschitzness, and adversarial accuracy. For example, on CIFAR-10, we see that TRADES($\beta$=6) achieves the highest adversarial test accuracy (48.58), and also the lowest Lipschitz constant (13.05). TRADES may not always perform better than AT, but it seems like a very effective method to produce classifiers with small local Lipschitz constants.  One issue is that the training accuracy isn't as high as it could be, and there are some issues with tuning the methods to prevent underfitting. In general, we focus on understanding the role of Lipschitzness. 
 
@@ -152,7 +157,7 @@ Our experimental results provide many insights into the role that Lipschitzness 
 
 - A clear takeaway is that *very high* Lipschitz constants imply that the classifier is vulnerable to adversarial examples. We see this most clearly with natural training, but it is also evidenced by GR and LLR. 
 
-- For both MNIST and CIFAR, the experiments show that minimizing the Lipschitzness goes hand-in-hand with maximizing the adversarial accuracy. This highlights that Lipschitzness is just as important as training with adversarial examples when it comes to improving the adversarial robustness.
+- For both CIFAR and Restricted ImageNet, the experiments show that minimizing the Lipschitzness goes hand-in-hand with maximizing the adversarial accuracy. This highlights that Lipschitzness is just as important as training with adversarial examples when it comes to improving the adversarial robustness.
 
 - TRADES always leads to significantly smaller Lipschitz constants than most methods, and the smoothness increases with the TRADES parameter $\beta$. However, the correlation between smoothness and robustness suffers from diminishing returns. It is not optimal to minimize the Lipschitzness as much as possible.
 
