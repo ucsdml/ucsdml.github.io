@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title:  "Adversarial Robustness Through Local Lipschitzness"
-date:   2020-03-24 13:49:00 -0700
+date:   2020-05-04 10:00:00 -0700
 categories: jekyll update
 tags: adversarial
 author: Cyrus Rashtchian and Yao-Yuan Yang
