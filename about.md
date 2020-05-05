@@ -15,6 +15,6 @@ The editorial board consists of the following members:
 
 with faculty advisor [Kamalika Chaudhuri](http://cseweb.ucsd.edu/~kamalika/).
 
-To contact the group, send email to ucsdml@googlegroups.com.
+If you are affiliated with UCSD and interested in contributing to the blog, please send an mail to both {yay005, crashtchian} at eng dot ucsd dot edu.
 
-If you are affiliated with UCSD and interested in contributing to the blog, please send mail to ucsdml@googlegroups.com.
+To receive email about new posts, please subscribe to https://mailman.ucsd.edu/mailman/listinfo/ucsd-ml-l.
