@@ -43,11 +43,11 @@ We propose designing a classifier using the sign of a relatively smooth function
 
 More formally, we consider classifiers $g(x) = \mathsf{sign}(f(x))$, and we highlight the local Lipschitzness of $f$ as an important quantity. Simply put, the Lipschitz constant of a function measures how fast a function changes by dividing the difference between function values by the distance between inputs:
 $\frac{|f(x) - f(y)|}{d(x,y)}.$
-Here $d(x,y)$ can be any metric. It is most common to use $d(x,y) = \|x - y\|$ for some norm on $\mathcal{R}^d$.
+Here $d(x,y)$ can be any metric. It is most common to use $d(x,y) = \|x - y\|$ for some norm on $\mathbb{R}^d$.
 Previous works ([1](https://arxiv.org/abs/1811.05381), [2](https://arxiv.org/abs/1807.09705)) shows that enforcing global Lipschitzness is too strict. Instead, we consider when $f$ is $L$-locally Lipschitz, which means that it changes slowly, at rate $L$, in a small neighborhood of radius $r$ around it. 
 
 <div class="definition">
-	A function $f: \mathcal{X} \rightarrow \mathcal{R}$ is $L$-Locally Lipschitz in a radius $r$ around a point $x \in \mathcal{X}$, if for all $x'$ such that $d(x,x') \leq r$, we have
+	A function $f: \mathcal{X} \rightarrow \mathbb{R}$ is $L$-Locally Lipschitz in a radius $r$ around a point $x \in \mathcal{X}$, if for all $x'$ such that $d(x,x') \leq r$, we have
 	$ |f(x) - f(x')| \leq L \cdot d(x, x').$
 </div>
 
@@ -57,7 +57,7 @@ However, we are the first to identify a natural condition (data separation) that
 
 Our main theoretical result says that if the two classes are separated -- in the sense that points from different classes are distance at least $2r$ apart, then there exists a $1/r$-locally Lipschitz function that  is both robust to perturbations of distance $r$ and also 100% accurate.
 
-For many real world data, the separation assumption in fact holds.
+For many real world datasets, the separation assumption in fact holds.
 
 {:refdef: style="text-align: center;"}
 <div>
@@ -66,9 +66,8 @@ For many real world data, the separation assumption in fact holds.
 </div>
 {:refdef}
 
-For example, consider the CIFAR-10 and Restricted ImageNet datasets
-(for the latter, we removed a handful of images that appeared twice with different labels).  
-The following figure is the histogram of the $\ell_\infty$ distance of each training example to its closest differently-labeled example.
+For example, consider the CIFAR-10 and Restricted ImageNet datasets (for the latter, we removed a handful of images that appeared twice with different labels).
+The figure shows the histogram of the $\ell_\infty$ distance of each training example to its closest differently-labeled example.
 From the figure we can see that the dataset is $0.21$ separated, indicating that there exists a solution that's both robust and accurate with a perturbation distance up to $0.105$.
 Perhaps surprisingly, most work on adversarial examples considers small perturbations of size $0.031$ for CIFAR-10 and $0.031$ for Restricted ImageNet, which are both much less than the observed separation in these histograms.
 
@@ -97,22 +96,22 @@ Now that we've made a big deal of local Lipschitzness, and provided some theory 
 
 We also need to explain how we measure Lipschitzness on real data. For simplicity, we consider the average local Lipschitzness, computed using 
 
-$$
+\\[
 \frac{1}{n}\sum_{i=1}^n\max_{x_i'\in\mathsf{Ball}(x_i,\epsilon)}\frac{|f(x_i)-f(x_i')|}{\|x_i-x_i'\|_\infty}.
-$$
+\\]
 
 The benefit is that we want the function to be smooth on average, even though there may be some outliers.
 One of the best methods for adversarial examples is [TRADES](https://arxiv.org/abs/1901.08573), which encourages local Lipschitzness by minimizing the following loss function:
 
-$$
-\min_{f} \mathbb{E} \Big\{\mathcal{L}(f(X),Y)+\beta\max_{X'\in\mathsf{Ball}(X,\epsilon)} \mathcal{L}(f(X),f(X'))\Big\}.
-$$
+\\[
+\min_{f} \mathbb{E} \Big\\{\mathcal{L}(f(X),Y)+\beta\max_{X'\in\mathsf{Ball}(X,\epsilon)} \mathcal{L}(f(X),f(X'))\Big\\}.
+\\]
 
 TRADES is different than [Adversarial Training (AT)](https://arxiv.org/abs/1706.06083), which optimizes the following:
 
-$$
-\min_{f} \mathbb{E} \Big\{\max_{X'\in\mathsf{Ball}(X,\epsilon)}\mathcal{L}(f(X'),Y)\Big\}.
-$$
+\\[
+\min_{f} \mathbb{E} \Big\\{\max_{X'\in\mathsf{Ball}(X,\epsilon)}\mathcal{L}(f(X'),Y)\Big\\}.
+\\]
 
 AT directly optimizes over adversarial examples, while TRADES encourages $f(X)$ and $f(X')$ to be similar when $X$ and $X'$ are close to each other. The TRADES parameter $\beta$ controls the local smoothness (larger $\beta$ means a smaller Lipschitz constant).
 
