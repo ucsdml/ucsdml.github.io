@@ -25,7 +25,7 @@ The main idea is that we should use a locally smooth classifier, one that doesn'
 
 The reason why we see a trade-off between robustness and accuracy is due to training methods. The best neural network optimization methods lead to functions that change very rapidly, as this allows the network to closely fit the data. 
 
-Since we care about robustness, we actually want to move as slowly as possible from class to class. This is especially true for separated data. Think about an image dataset. Cats look different than dogs, and pandas look different than gibbons. Quantitatively, different animals should be far apart (for example, in $L_{\infty}$ and $L_2$ distance). It follows that we should be able to classify them robustly. If we are very confident in our prediction, then as long as we don't modify a true image too much, we should output the same, correct label. 
+Since we care about robustness, we actually want to move as slowly as possible from class to class. This is especially true for separated data. Think about an image dataset. Cats look different than dogs, and pandas look different than gibbons. Quantitatively, different animals should be far apart (for example, in $\ell_{\infty}$ and $\ell_2$ distance). It follows that we should be able to classify them robustly. If we are very confident in our prediction, then as long as we don't modify a true image too much, we should output the same, correct label. 
 
 So why do adversarial perturbations lead to a high error rate? This is a very active area of research, and there's no easy answer. 
 As a step towards a better understanding, we present theoretical results on achieving perfect accuracy and robustness by using a locally smooth function. We also explore how well this works in practice. 
