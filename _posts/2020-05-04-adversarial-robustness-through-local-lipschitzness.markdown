@@ -43,7 +43,7 @@ We propose designing a classifier using the sign of a relatively smooth function
 
 More formally, we consider classifiers $g(x) = \mathsf{sign}(f(x))$, and we highlight the local Lipschitzness of $f$ as an important quantity. Simply put, the Lipschitz constant of a function measures how fast a function changes by dividing the difference between function values by the distance between inputs:
 $\frac{|f(x) - f(y)|}{d(x,y)}.$
-Here $d(x,y)$ can be any metric. It is most common to use $d(x,y) = \|x - y\|$ for some norm on $\mathbb{R}^d$.
+Here $d(x,y)$ can be any metric. It is most common to use $d(x,y) = \\|x - y\\|$ for some norm on $\mathbb{R}^d$.
 Previous works ([1](https://arxiv.org/abs/1811.05381), [2](https://arxiv.org/abs/1807.09705)) shows that enforcing global Lipschitzness is too strict. Instead, we consider when $f$ is $L$-locally Lipschitz, which means that it changes slowly, at rate $L$, in a small neighborhood of radius $r$ around it. 
 
 <div class="definition">
@@ -97,7 +97,7 @@ Now that we've made a big deal of local Lipschitzness, and provided some theory 
 We also need to explain how we measure Lipschitzness on real data. For simplicity, we consider the average local Lipschitzness, computed using 
 
 \\[
-\frac{1}{n}\sum_{i=1}^n\max_{x_i'\in\mathsf{Ball}(x_i,\epsilon)}\frac{|f(x_i)-f(x_i')|}{\|x_i-x_i'\|_\infty}.
+\frac{1}{n}\sum_{i=1}^n\max_{x_i'\in\mathsf{Ball}(x_i,\epsilon)}\frac{|f(x_i)-f(x_i')|}{\\|x_i-x_i'\\|_\infty}.
 \\]
 
 The benefit is that we want the function to be smooth on average, even though there may be some outliers.
