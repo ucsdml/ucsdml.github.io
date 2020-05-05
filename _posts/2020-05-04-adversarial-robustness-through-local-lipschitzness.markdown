@@ -115,7 +115,7 @@ TRADES is different than [Adversarial Training (AT)](https://arxiv.org/abs/1706.
 
 AT directly optimizes over adversarial examples, while TRADES encourages $f(X)$ and $f(X')$ to be similar when $X$ and $X'$ are close to each other. The TRADES parameter $\beta$ controls the local smoothness (larger $\beta$ means a smaller Lipschitz constant).
 
-We also consider two other plausible methods for achieving accuracy and robustness, along with local Lipschitzness;
+We also consider two other plausible methods for achieving accuracy and robustness, along with local Lipschitzness:
 [Local Linear Regularization (LLR)](https://arxiv.org/abs/1907.02610)
 and [Gradient Regularization (GR)](https://arxiv.org/abs/1905.11468).
 
