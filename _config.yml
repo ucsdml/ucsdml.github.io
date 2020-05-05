@@ -25,11 +25,14 @@ twitter_usernames:
   - kamalikac
 show_excerpts: True
 
+google_analytics: UA-165592353-1
+
 # Build settings
 markdown: kramdown
 theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-seo-tag
 
 
 # Exclude from processing.
