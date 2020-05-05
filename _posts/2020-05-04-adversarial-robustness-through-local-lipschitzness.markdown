@@ -34,7 +34,7 @@ As a motivating example, consider a simple 2D binary classification dataset. The
 The orange curve in the following picture shows such a boundary. In contrast, the black curve comes very close to some data points. Even though both boundaries correctly classify all of the examples, the black curve is susceptible to adversarial examples, while the orange curve is not. 
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2020-03-24-local-lip/wig_boundary.png" width="40%">
+<img src="/assets/2020-05-04-local-lip/wig_boundary.png" width="40%">
 {:refdef}
 
 ### Perfect accuracy and robustness, at least in theory
@@ -58,28 +58,29 @@ However, we are the first to identify a natural condition (data separation) that
 Our main theoretical result says that if the two classes are separated -- in the sense that points from different classes are distance at least $2r$ apart, then there exists a $1/r$-locally Lipschitz function that  is both robust to perturbations of distance $r$ and also 100% accurate.
 
 For many real world data, the separation assumption in fact holds.
-Take CIFAR-10 dataset as an example.
-We removed a handful of images that appeared twice in the dataset with different labels.
-The following figure is the histogram of the $\ell_\infty$ distance of each training example to its closest differently-labeled example.
-From the figure we can see that the dataset is $0.21$ separated, indicating that there exists a solution that's both robust and accurate with a perturbation distance up to $0.105$.
-Perhaps surprisingly, most work on adversarial examples considers small perturbations of size $0.031$ for CIFAR-10 and $0.031$ for Restricted ImageNet, which are both much less than the observed separation in these histograms.
 
 {:refdef: style="text-align: center;"}
 <div>
-  <img src="/assets/2020-03-24-local-lip/cifar10_linf_hist.png" width="48%" style="margin: 0 auto">
-  <img src="/assets/2020-03-24-local-lip/resImgNet_linf_hist.png" width="48%" style="margin: 0 auto">
+  <img src="/assets/2020-05-04-local-lip/cifar10_linf_hist.png" width="48%" style="margin: 0 auto">
+  <img src="/assets/2020-05-04-local-lip/resImgNet_linf_hist.png" width="48%" style="margin: 0 auto">
 </div>
 {:refdef}
+
+For example, consider the CIFAR-10 and Restricted ImageNet datasets
+(for the latter, we removed a handful of images that appeared twice with different labels).  
+The following figure is the histogram of the $\ell_\infty$ distance of each training example to its closest differently-labeled example.
+From the figure we can see that the dataset is $0.21$ separated, indicating that there exists a solution that's both robust and accurate with a perturbation distance up to $0.105$.
+Perhaps surprisingly, most work on adversarial examples considers small perturbations of size $0.031$ for CIFAR-10 and $0.031$ for Restricted ImageNet, which are both much less than the observed separation in these histograms.
 
 <div class="theorem">
 If the data is $2r$-separated, then there always exists a classifier that is perfectly robust and accurate, which is based on a function with local Lipschitz constant $1/r$.
 </div>
 
- We basically use a scaled version of the 1-nearest-neighbor classifier. The proof just uses the data separation along with a few applications of the triangle inequality. The next figure shows our theorem in action on the Spiral dataset. The classifier $g(x) = \mathsf{sign}(f(x))$ has high adversarial and clean accuracy, while the small local Lipschitz constant ensures that it gradually changes near the decision boundaries.
+ We basically use a scaled version of the 1-nearest neighbor classifier in the infinite sample limit. The proof just uses the data separation along with a few applications of the triangle inequality. The next figure shows our theorem in action on the Spiral dataset. The classifier $g(x) = \mathsf{sign}(f(x))$ has high adversarial and clean accuracy, while the small local Lipschitz constant ensures that it gradually changes near the decision boundaries.
 
 {:refdef: style="text-align: center;"}
 <figure class="image">
-  <img src="/assets/2020-03-24-local-lip/spiral.png" width="40%" style="margin: 0 auto">
+  <img src="/assets/2020-05-04-local-lip/spiral.png" width="40%" style="margin: 0 auto">
   <figcaption>
     Function and resulting classifier from our theorem.
     The prediction is confident most of the time, and it gradually changes between classes (orange to blue).
@@ -115,7 +116,7 @@ $$
 
 AT directly optimizes over adversarial examples, while TRADES encourages $f(X)$ and $f(X')$ to be similar when $X$ and $X'$ are close to each other. The TRADES parameter $\beta$ controls the local smoothness (larger $\beta$ means a smaller Lipschitz constant).
 
-We also consider two other plausible methods for achieving accuracy and robustness, along with local Lipschitzness.
+We also consider two other plausible methods for achieving accuracy and robustness, along with local Lipschitzness;
 [Local Linear Regularization (LLR)](https://arxiv.org/abs/1907.02610)
 and [Gradient Regularization (GR)](https://arxiv.org/abs/1905.11468).
 
