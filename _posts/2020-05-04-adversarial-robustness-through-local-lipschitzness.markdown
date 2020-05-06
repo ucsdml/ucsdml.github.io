@@ -17,7 +17,7 @@ Several recent papers investigate whether an accuracy-robustness trade-off is ne
 Some [pessimistic work](https://arxiv.org/abs/1805.12152) says that unfortunately this may be the case, possibly [due to high-dimensionality](https://arxiv.org/abs/1801.02774) or [computational infeasibility](https://arxiv.org/abs/1805.10204). 
 
 If a trade-off is unavoidable, then we have a dilemma: should we aim for higher accuracy or robustness or somewhere in between?
-Our [recent paper](https://arxiv.org/abs/1907.02610) explores an optimistic perspective: we posit that robustness and accuracy should be attainable together for real image classification tasks. 
+Our [recent paper](https://arxiv.org/abs/2003.02460) explores an optimistic perspective: we posit that robustness and accuracy should be attainable together for real image classification tasks. 
 
 The main idea is that we should use a locally smooth classifier, one that doesn't change its value too quickly around the data. Let's walk through some theory about why this is a good idea. Then, we will explore how to use this in practice.
 
