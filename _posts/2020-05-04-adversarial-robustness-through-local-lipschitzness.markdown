@@ -69,7 +69,7 @@ For many real world datasets, the separation assumption in fact holds.
 For example, consider the CIFAR-10 and Restricted ImageNet datasets (for the latter, we removed a handful of images that appeared twice with different labels).
 The figure shows the histogram of the $\ell_\infty$ distance of each training example to its closest differently-labeled example.
 From the figure we can see that the dataset is $0.21$ separated, indicating that there exists a solution that's both robust and accurate with a perturbation distance up to $0.105$.
-Perhaps surprisingly, most work on adversarial examples considers small perturbations of size $0.031$ for CIFAR-10 and $0.031$ for Restricted ImageNet, which are both much less than the observed separation in these histograms.
+Perhaps surprisingly, most work on adversarial examples considers small perturbations of size $0.031$ for CIFAR-10 and $0.005$ for Restricted ImageNet, which are both much less than the observed separation in these histograms.
 
 <div class="theorem">
 If the data is $2r$-separated, then there always exists a classifier that is perfectly robust and accurate, which is based on a function with local Lipschitz constant $1/r$.
