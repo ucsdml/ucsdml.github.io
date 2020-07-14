@@ -1,0 +1,126 @@
+---
+layout: post
+mathjax: true
+title:  "The Power of Comparison: Reliable Active Learning"
+date:   2020-06-13 10:00:00 -0700
+categories: jekyll update
+tags: PAC-Learning
+author: Max Hopkins
+excerpt: In the world of big data, large but costly to label datasets dominate many fields. Active learning, a semi-supervised alternative to the standard PAC-learning model, was introduced to explore whether adaptive labeling could learn concepts with exponentially fewer labeled samples. Unfortunately, it is well known that in standard models, active learning provides little improvement over passive learning for the foundational classes such as linear separators. We discuss how empowering the learner to compare points resolves not only this issue, but also allows us to build efficient algorithms which make no errors at all!
+
+
+---
+With the surge of widely available massive online datasets, we have become *very* good at building algorithms which distinguish between the following:
+
+{:refdef: style="text-align: center;"}
+<img src="/assets/2020-06-13-rel-comp/cat-dog.png" width="90%">
+{:refdef}
+
+But what about solving classification problems which may have large unlabeled datasets, but whose labeling requires expert advice? What about situations like examining an MRI scan or recognizing a pedestrian, where a mistake in classification could be the difference between life and death? In these situations, it would be great if we could build a classification algorithm with the following properties:
+
+1. The algorithm requires **very few labeled data points** to train.
+2. The algorithm **never makes a mistake**.
+
+This raises an obvious question: is building an efficient algorithm with such strong guarantees even possible? It turns out the answer is **yes**&#151;just not in the standard learning model. In [recent joint work](https://arxiv.org/pdf/1907.03816.pdf) with [Daniel Kane](https://cseweb.ucsd.edu/~dakane/) and [Shachar Lovett](https://cseweb.ucsd.edu/~slovett/home.html), we show that while it is impossible to have such guarantees using only the *labels* of data points, achieving the goal becomes easy if you give the algorithm **a little more power**.
+
+### Comparison Queries
+
+Our work explores the additional power of algorithms which are allowed to **compare data**. In slightly more detail, imagine points in $\mathbb{R}^d$ are labeled by a linear classifier: that is $\text{sign}(f)$ for some affine linear function $f(x) = \langle x, w \rangle + b$. 
+
+{:refdef: style="text-align: center;"}
+<img src="/assets/2020-06-13-rel-comp/linear-classifier.png" width="80%">
+{:refdef}
+
+A comparison between two data points $x,y \in \mathbb{R}^d$ asks which point is closer to the classifier, or more formally:
+\\[
+f(x) - f(y) \overset{?}{\geq} 0.
+\\]
+Comparison queries are natural from a human perspective&#151;think how often throughout your day you compare objects, ideas, or alternatives. In fact, it has even been shown that in many practical circumstances, we may be [better at accurately comparing objects](https://link.springer.com/chapter/10.1007/978-3-642-14125-6_4#:~:text=The%20learning%20by%20pairwise%20comparison,preference%20modeling%20and%20decision%20making.&text=We%20explain%20how%20to%20approach,within%20the%20framework%20of%20LPC.) than we are at labeling them! Since we are allowing our algorithm access to an expert (possibly human) oracle, it makes sense to allow the algorithm to ask the expert to compare data.
+
+### The Algorithm
+
+How can we use comparisons to learn with **few queries** and **no  mistakes**? It turns out that a remarkably simple algorithm suffices! Imagine you are given a finite sample $S \subset \mathbb{R}^d$, and would like to find the label of every point in $S$ without making any errors. Consider the following basic procedure:
+
+1. Draw a small subsample $S' \subset S$
+2. Send $S'$ to the oracle to learn both labels and comparisons
+3. Repeat the process, restricting to points whose labels are not learned in Step 2.
+
+How exactly does Step 2 "learn labels"? Formally, this process is done via a linear program whose constraints are given by the oracle responses on $S'$. Somewhat more informally, this has a nice geometric interpretation. Let's consider first the two dimensional case, originally studied by [Kane, Lovett, Moran, and Zhang](https://arxiv.org/abs/1704.03564) (KLMZ). Figure 3 shows how comparisons allow us to build cones based off of the subsample $S'$. In essence, by locating the point on each side closest to the hyperplane, we can infer the label of any point within cones stemming from such minima.
+
+{:refdef: style="text-align: center;"}
+<img src="/assets/2020-06-13-rel-comp/Infer.png" width="90%">
+{:refdef}
+
+Why does this process satisfy our guarantees? It is easy to see that as long as the oracle is correct, this process never mislabels a point. This is because all hyperplanes consistent with the responses to $S'$ must label the points within the cones the same color as their base point. What is more subtle is analyzing how many points the algorithm must send to the oracle before it labels all of S.
+
+### Inference and Average Inference Dimension
+
+In two dimensions, this analysis can be done through the combinatorial theory of *inference dimension*, introduced by KLMZ. 
+
+<div class="definition">
+Given a set $X\subseteq \mathbb{R}^d$ and a family of classifiers $H$, the inference dimension of the pair $(X,H)$ is the smallest $k$ such that any sample of size $k$ contains a point which lies in a cone generated by the other $k-1$ points. If no such $k$ exists, we say the inference dimension of $(X,H)$ is infinite.
+</div>
+
+In essence, by picking a subsample a constant times larger than the inference dimension, this property implies that the resulting cones will cover a constant fraction of our distribution. Let's look at the same basic example as before: linear classifiers in two dimensions.
+
+Figure 4 shows that the inference dimension of linear classifiers in two dimensions is at most 7. In particular, we see that a sample of size 7 must have at least 4 of a single label, and that one of these 4 points will lie in the cone stemming from the point closest to the hyperplane.
+
+{:refdef: style="text-align: center;"}
+<img src="/assets/2020-06-13-rel-comp/Inf-dim.png" width="90%">
+{:refdef}
+
+This means that in two dimensions, it only takes $O(\log(\|S\|))$ rounds before our algorithm has labeled every point! Unfortunately, in 3+ dimensions, linear classifiers become harder to deal with&#151;indeed KLMZ show that their inference dimension is infinite. In our recent work, we circumvent this issue by applying a standard assumption from the data science and learning literature, that our sample $S$ is drawn from some restricted range of natural distributions. The core idea of our analysis is based off of a simple lemma:
+
+<div class="lemma">
+If the probability that a sample $S$ of size $k$ contains no point which may be inferred from the rest is at most $g(k)$, then size $n$ finite samples have inference dimension $k$ with probability:
+</div>
+\\[
+\Pr[\text{Inference dimension of} \ (S,H) \leq k] \geq 1-{ n \choose k}g(k).
+\\]
+
+The main technical difficulty then becomes showing that $g(k)$, which we term *average inference dimension*, is indeed small over natural distributions. In particular, we examine the class of s-concave distributions (for $s \geq -\frac{1}{2d+3}$), a wide ranging generalization of Gaussians that includes fatter-tailed distributions like the Pareto and t-distribution.
+
+<div class="theorem">
+If $S \subseteq \mathbb{R}^d$, $|S|=k$, is drawn from an s-concave distribution, the probability that $|S|$ contains no point which may be inferred from the rest is at most:
+</div>
+\\[
+g(k) \leq 2^{-\tilde{\Omega}\left(\frac{k^2}{d}\right)}.
+\\]
+
+
+Plugging this into our observation, we see that as long as our sample is reasonably large, it will have inference dimension $\tilde{O}(d\log(\|S\|))$ with high probability! This allows us to efficiently learn the labels of $S$, so long as the distribution is s-concave. As a corollary, we get the following result:
+
+<div class="theorem">
+Using comparisons, the process described in Figure 3 learns the labels of a sample $S \subset \mathbb{R}^d$ with respect to any linear classifier in only
+</div>
+
+\\[
+\tilde{O}(d\log(|S|)^2)
+\\]
+expected queries, as long as $S$ is drawn from an s-concave distribution.
+
+While we have focused in the above on learning finite samples, it turns out satisfying similar guarantees over all of $\mathbb{R}^d$ (under natural distributions) is also possible via the same argument. In this case, rather than trying to learn the label of every point, we allow our algorithm to respond "I don't know" on an $\varepsilon$ fraction of samples. This type of algorithm goes by many names in the literature, perhaps the catchiest of which is a ["Knows What It Knows"](http://icml2008.cs.helsinki.fi/papers/627.pdf) (KWIK) learner. The above then (with a bit of work) more or less translates into a KWIK-learner[^1] that uses only $d\log(1/\varepsilon)^2$ calls to the oracle. 
+
+[^1]: It's worth noting that we have abused notation here. Formally, our algorithms do not fall into the KWIK-model, but are built in a similar learning-theoretic framework called [RPU-learning](https://people.csail.mit.edu/rivest/pubs/RS88b.pdf).
+
+### Lower Bound
+
+Why doesn't this algorithm work with only labels? It's long been known that even in two dimensions, [achieving these learning guarantees is impossible](https://cseweb.ucsd.edu/~dasgupta/papers/sample.pdf) for certain adversarial distributions such as $S^1$. Let's take a look at how our results match up on a less adversarial example with a long history in learning theory: the d-dimensional unit ball.
+
+<div class="theorem">
+Using comparisons, the process described in Figure 3 KWIK-learns linear classifiers over the d-dimensional unit ball in only
+</div>
+\\[
+\tilde{O}(d\log^2(1/\varepsilon))
+\\]
+oracle calls. On the other hand, using only labels takes at least
+\\[
+\left (\frac{1}{\varepsilon}\right)^{\Omega(d)}
+\\]
+oracle calls.
+
+This latter fact follows from a standard cap packing argument. In particular, we can divide up the ball into many disjoint caps, and note that any KWIK-learner must query some point in at least half of the caps to be successful. This simple example shows the exponential power of comparisons: moving KWIK-learning of linear classifiers from intractable to highly efficient. As a final note, implementing the linear program formally used for learning takes time poly$\left(\frac{1}{\varepsilon},d\right)$, so the algorithm is computationally efficient as well.
+
+It remains to be seen whether this type of efficient, comparison-based KWIK-learning will be useful in practice. Comparison queries have [already been shown](https://arxiv.org/abs/1206.4674) to provide practical improvements over labels for similar learning problems, and have been used to great effect in other areas such as [recommender systems](https://dl.acm.org/doi/10.1007/11823865_4), [search](https://papers.nips.cc/paper/4381-randomized-algorithms-for-comparison-based-search), and [ranking](https://arxiv.org/abs/1606.08842) as well. Since we have recently extended our results to more realistic noisy scenarios in [joint work](https://arxiv.org/abs/2001.05497) with [Gaurav Mahajan](https://gomahajan.github.io/), we are optimistic that our techniques will be powerful in practice as well.
+
+### Footnotes
