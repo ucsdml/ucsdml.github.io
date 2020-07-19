@@ -126,7 +126,7 @@ oracle calls[^2].
 
 [^2]: This follows from a standard cap packing argument&#151;we can divide up the ball into many disjoint caps, and note that any KWIK-learner must query a point in at least half of them to be successful.
 
-This simple example shows **the exponential power of comparisons**: moving KWIK-learning from intractable to highly efficient. As a final note, implementing the algorithm amounts to running a series of small linear programs, and as a result is computationally efficient as well, only taking about poly$\left(\frac{1}{\varepsilon},d\right)$ time.
+This simple example shows **the exponential power of comparisons**: moving KWIK-learning from intractable to highly efficient. As a final note, implementing the algorithm amounts to running a series of small linear programs, and as a result is computationally efficient as well, only taking about $\text{poly}\left(\frac{1}{\varepsilon},d\right)$ time.
 
 It remains to be seen whether this type of efficient, comparison-based KWIK-learning will be useful in practice. Comparison queries have [already been shown](https://arxiv.org/abs/1206.4674) to provide practical improvements over labels for similar learning problems, and have been used to great effect in other areas such as [recommender systems](https://dl.acm.org/doi/10.1007/11823865_4), [search](https://papers.nips.cc/paper/4381-randomized-algorithms-for-comparison-based-search), and [ranking](https://arxiv.org/abs/1606.08842) as well. Since we have recently extended our results to more realistic noisy scenarios in [joint work](https://arxiv.org/abs/2001.05497) with [Gaurav Mahajan](https://gomahajan.github.io/), we are optimistic that our techniques will be powerful in practice as well.
 
