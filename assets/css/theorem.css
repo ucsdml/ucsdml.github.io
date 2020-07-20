@@ -6,7 +6,7 @@
     font-style: italic;
 }
 .theorem:before {
-    content: "Theorem.";
+    content: "Theorem. ";
     font-weight: bold;
     font-style: normal;
 }
@@ -16,7 +16,7 @@
     font-style: italic;
 }
 .lemma:before {
-    content: "Lemma.";
+    content: "Lemma. ";
     font-weight: bold;
     font-style: normal;
 }
@@ -26,7 +26,7 @@
     font-style: normal;
 }
 .proof:before {
-    content: "Proof.";
+    content: "Proof. ";
     font-style: italic;
 }
 .proof:after {
@@ -39,7 +39,7 @@
     font-style: normal;
 }
 .definition:before {
-    content: "Definition.";
+    content: "Definition. ";
     font-weight: bold;
     font-style: normal;
 }
@@ -49,7 +49,7 @@
     font-style: normal;
 }
 .remark:before {
-    content: "Remark.";
+    content: "Remark. ";
     font-weight: bold;
     font-style: normal;
 }
@@ -59,7 +59,7 @@
     font-style: normal;
 }
 .proposition:before {
-    content: "Proposition.";
+    content: "Proposition. ";
     font-weight: bold;
     font-style: normal;
 }
@@ -69,7 +69,7 @@
     font-style: normal;
 }
 .corollary:before {
-    content: "Corollary.";
+    content: "Corollary. ";
     font-weight: bold;
     font-style: normal;
 }
