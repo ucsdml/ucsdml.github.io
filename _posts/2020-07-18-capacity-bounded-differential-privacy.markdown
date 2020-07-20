@@ -102,8 +102,8 @@ is an adversary $h$ who wants to cause more harm when the database is $X$ than w
 but all he can see is an output $x$ drawn from either $A(X)$ or $A(X')$. 
 He may process the output as much as he likes and ultimately decides to cause $h(x)$ 
 harm. 
-If $x$ came from $A(X)$, then he causes $\mathbb{E}_{x \sim P}[h(x)]$ 
-harm on average. If $x$ came from $A(X')$, then he causes $\mathbb{E}_{x \sim Q}[f^\star(h(x))]$ 
+If $x$ came from $A(X)$, then he causes $\mathbb{E}\_{x \sim P}[h(x)]$ 
+harm on average. If $x$ came from $A(X')$, then he causes $\mathbb{E}\_{x \sim Q}[f^\star(h(x))]$ 
 harm on average. He wants to maximize the difference in harm caused.
 
 Viewing differential privacy through this adversarial interpretation, it is
