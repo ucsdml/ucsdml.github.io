@@ -1,7 +1,9 @@
 {% if page.mathjax %}
 <script>
   MathJax = {
+    loader: {load: ['[tex]/color']},
     tex: {
+      packages: {'[+]': ['color']},
       inlineMath: [['$', '$'], ['\\(', '\\)']],
       displayMath: [             // start/end delimiter pairs for display math
         ['$$', '$$'],
