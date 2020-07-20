@@ -5,6 +5,8 @@ title:  "Adversarial Robustness for Non-Parametric Classifiers"
 date:   2020-07-20 10:00:00 -0700
 categories: jekyll update
 tags: adversarial non-parametric
+paper_url: https://arxiv.org/abs/1906.03310
+code_url: https://github.com/yangarbiter/adversarial-nonparametrics
 author: <a href='http://yyyang.me/'>Yao-Yuan Yang</a>
 excerpt: Adversarial robustness has received much attention recently. Prior defenses and attacks for non-parametric classifiers have been developed on a classifier-specific basis. In this post, we take a holistic view and present a defense and an attack algorithm that are applicable across many non-parametric classifiers. Our defense algorithm, adversarial pruning, works by preprocessing the dataset so the data is better separated. It can be interpreted as a finite sample approximation to the optimally robust classifier. The attack algorithm, region-based attack, works by decomposing the feature space into convex regions. We show that our defense and attack have good empirical performance over a range of datasets.
 ---
@@ -109,16 +111,10 @@ radius $r$.
 The objective of a robust classifier is to maximize the
 astuteness under $\mu$, which is the probability that the classifier is both $r$-robust and accurate for a new sample $(\mathbf{x}, y)$ [[1](https://arxiv.org/abs/1706.06083), [2](https://arxiv.org/abs/1706.03922)].
 
-<div class="definition">
+<div class="definition" style="overflow-x: auto;">
 Let $\mathbb{B}(\mathbf{x}, r)$ be the ball with radius $r$ around $\mathbf{x}$ and
 $S_j(f,r) := \{\mathbf{x} \in \mathcal{X} \mid f(\mathbf{x}') = j \text{ s.t. } \forall \mathbf{x}' \in \mathbb{B}(\mathbf{x}, r)\}$.
 For distribution $\mu$ on $\mathcal{X} \times [C]$, the astuteness is defined as
-$$
-ast_\mu(f,r) =  \sum_{j=1}^{C} \int_{\mathbf{x} \in S_j(f,r)} Pr(y = j \mid  \mathbf{x}) d \mu.
-$$
-</div>
-
-<div>
 $$
 ast_\mu(f,r) =  \sum_{j=1}^{C} \int_{\mathbf{x} \in S_j(f,r)} Pr(y = j \mid  \mathbf{x}) d \mu.
 $$
@@ -128,7 +124,8 @@ Next, we present the $r$-optimal classifier that achieves optimal astuteness.
 By comparing it with the classic Bayes optimal classifier, which
 achieves optimal accuracy, the $r$-optimal classifier is a _Robust Analogue to the Bayes optimal classifier_.
 
-<table style="width:100%;">
+<div style="width: 100%; overflow-x: auto;">
+<table style="">
   <tr>
     <th>$r$-optimal classifier (black curve)</th>
     <th>Bayes optimal classifier (blue curve)</th>
@@ -152,6 +149,7 @@ achieves optimal accuracy, the $r$-optimal classifier is a _Robust Analogue to t
     </td>
   </tr>
 </table>
+</div>
 
 We observe that
 AP can be interpreted as a finite sample approximation to the $r$-optimal classifier.
@@ -219,7 +217,7 @@ RBA finds the closest region $P_i$ by iterating through each region that is labe
 More formally, given a set of regions and its corresponding label $(P_i, y_i)$, the RBA solves
 the following optimization problem:
 
-<div>
+<div style="overflow-x: auto;">
 \[
   \underset{i : f(\mathbf{x}) \neq y_i }{\textcolor{red}{min}} \ 
   \underset{\mathbf{x}_{adv} \in P_i}{\textcolor{ForestGreen}{min}} \|\mathbf{x} - \mathbf{x}_{adv}\|_p
@@ -270,7 +268,7 @@ we use the ratio of the distance between an input $\mathbf{x}$ and its closest
 adversarial example being found before and after the defense algorithm is applied.
 We call this criterion _defense score ($\text{defscore}$)_. 
 More formally,
-<div>
+<div style="overflow-x: auto;">
 $$
 \text{defscore}(\mathbf{x}) = 
 \frac{\text{defended dist. from } \mathbf{x} \text{ to } \mathbf{x}_{adv}}{\text{undefended dist. from } \mathbf{x} \text{ to } \mathbf{x}_{adv}}
@@ -296,7 +294,8 @@ However, as a black-box attack, it does not use the
 internal structure of the classifier.
 It appears that BBox is the state-of-the-art algorithm for attacking non-parametric methods.
 
-<table style="width: 100%">
+<div style="width: 100%; overflow-x: auto;">
+<table style="font-size: 80%; ">
   <tr>
     <th colspan="1"></th>
     <th colspan="4">$1$-NN</th>
@@ -334,6 +333,7 @@ It appears that BBox is the state-of-the-art algorithm for attacking non-paramet
     <td>.182</td> <td style="font-weight: bold">.149</td>
   </tr>
 </table>
+</div>
 
 From the result, we see that the RBA algorithm is able to perform well across many non-parametric methods
 and datasets (for results on more datasets and classifiers, please refer our
@@ -349,7 +349,8 @@ which has a lot of success in parametric classifiers.
 We use RBA-Exact to attack $1$-NN and RBA-Approx to attack $3$-NN and RF for the calculation
 of defscore.
 
-<table style="width:100%">
+<div style="width: 100%; overflow-x: auto;">
+<table style="width:100%; font-size: 80%;">
   <tr>
     <th colspan="1"></th>
     <th colspan="3">$1$-NN</th>
@@ -387,6 +388,7 @@ of defscore.
     <td>1.04</td> <td>1.01</td> <td style="font-weight: bold">1.82</td>
   </tr>
 </table>
+</div>
 
 From the table, we see that AP performs well across different classifiers.
 AP always generates above $1.0$ defscore, which means the classifier becomes more robust after the defense.
