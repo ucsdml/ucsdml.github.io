@@ -70,7 +70,7 @@ Given a set $X\subseteq \mathbb{R}^d$ and a family of classifiers $H$, the infer
 Let's take a look at an example, linear classifiers in two dimensions. Figure 4 shows that this class has inference dimension at most 7. Why? A sample of size 7 will always have at least 4 points with the same label, and the label of one of these points can always be inferred from labels and comparisons on the rest!
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2020-07-27-rel-comp/Inf-dim.png" width="90%">
+<img src="/assets/2020-07-27-rel-comp/inf-dim.png" width="90%">
 {:refdef}
 
 KLMZ show that by picking the size of $S'$ to be just a constant times larger than the inference dimension, the resulting cones will usually cover a constant fraction of our distribution. In other words, in two dimensions, every round of our algorithm infers a constant fraction of the remaining points, which means we only need $O(\log(\|S\|))$ rounds before our algorithm has labeled everything! 
