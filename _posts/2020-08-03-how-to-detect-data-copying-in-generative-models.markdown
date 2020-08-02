@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title:  "How to Detect Data-Copying in Generative Models" 
-date:   2020-08-03 10:00:00 -0700
+date:   2020-08-03 12:00:00 -0700
 categories: jekyll update
 tags: generative modeling, generalization, overfitting
 author:  <a href='mailto:cmeehan@eng.ucsd.edu'>Casey Meehan</a> 
@@ -36,7 +36,7 @@ This practice is well established by existing two-sample generative model tests 
 Most generative model tests like those listed above check for over-representation: the tendency of a model to over-emphasize certain regions of the instance space by assigning more probability mass there than it should. Consider a data distribution $P$ over an instance space $\mathcal{X}$ of cat cartoons. Region $\mathcal{C} \subset \mathcal{X}$ specifically contains cartoons of cats with bats. Using training set $T \sim P$, we train a generative model $Q$ from which we draw a sample $Q_m \sim Q$. 
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2020-08-03-data-copying/overrepresentation_2.png" width="95%">
+<img src="/assets/2020-08-03-data-copying/overrepresentation.png" width="95%">
 {:refdef}
 
 Evidently, the model $Q$ really likes region $\mathcal{C}$, generating an undue share of cats with bats. More formally, we say $Q$ is over-representing some region $\mathcal{C}$ when 
@@ -49,7 +49,7 @@ Data-copying, on the other hand, occurs when $Q$ produces samples that are *clos
 
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2020-08-03-data-copying/data_copying_1.png" width="95%">
+<img src="/assets/2020-08-03-data-copying/data_copying_1_.png" width="95%">
 {:refdef}
 
 We define proximity to training set $d(x,T)$ to be the distance between $x$ and its nearest neighbor in $T$ according to some metric $d_\mathcal{X}:\mathcal{X} \times \mathcal{X} \rightarrow \mathbb{R}$. Specifically 
@@ -59,7 +59,7 @@ We define proximity to training set $d(x,T)$ to be the distance between $x$ and 
 At a first glance, the generated samples in the above figure look perfectly fine, representing the different regions nicely. But taken alongside its training and test sets, we see that it has effectively copied the cat with bat in the lower right corner (for visualization, we let Euclidean distance $d_\mathcal{X}$ be a proxy for similarity).  
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2020-08-03-data-copying/data_copying_2_.png" width="95%">
+<img src="/assets/2020-08-03-data-copying/data_copying_2.png" width="95%">
 {:refdef}
 
 More formally, $Q$ is data-copying $T$ in some region $\mathcal{C} \subset \mathcal{X}$ when
@@ -96,7 +96,7 @@ $$
 $$
 </div>
 
-This statistic --- a probability --- is closer to what we want to measure, and more stable. It tells us how much more likely samples in $Q_m$ are to fall near samples in $T$ relative to the held out samples in $P_n$. If it is much less than a half, then significant data-copying is occurring. This statistic is much more robust to outliers and lower variance. Additionally, by measuring a probability instead of an expected distance, this statistic is transferable between different data domains and distance metrics: less than half is always overfit, half is always good, and over half is underfit (in the sense that the generated samples are further from the training set than they should be). We are also able to show that this indicator statistic has nice concentration properties agnostic to the chosen distance metric.
+This statistic --- a probability --- is closer to what we want to measure, and is more stable. It tells us how much more likely samples in $Q_m$ are to fall near samples in $T$ relative to the held out samples in $P_n$. If it is much less than a half, then significant data-copying is occurring. This statistic is much more robust to outliers and is lower variance. Additionally, by measuring a probability instead of an expected distance, the value of this statistic is interpretable. Regardless of the data domain or distance metric, less than half is overfit, half is good, and over half is underfit (in the sense that the generated samples are further from the training set than they should be). We are also able to show that this indicator statistic has nice concentration properties agnostic to the chosen distance metric.
 
 It turns out that the above test is an instantiation of the [Mann-Whitney hypothesis test](https://en.wikipedia.org/wiki/Mann-Whitney_U_test), proposed in 1947, for which there are computationally efficient implementations in packages like [SciPy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html). By $Z$-scoring the Mann-Whitney statistic, we normalize its mean to zero and variance to one. We call this statistic $Z_U$. As such, a generative model $Q$ with $Z_U \ll 0$ is heavily data-copying and a score $Z_U \gg 0$ is underfitting. Near 0 is ideal.  
 
@@ -156,7 +156,7 @@ Extending these tests to a more complex and practical domain, we check the Image
 <img src="/assets/2020-08-03-data-copying/GAN_overfitting.png" width="60%"> 
 {:refdef}
 {:refdef: style="text-align: center;"}
-<h5> BigGan, an ImageNet12 conditional GAN, appears to significantly data-copy for all but its highest truncation levels, which are said to trade off between fidelity and diversity. </h5> 
+<h5> BigGan, an ImageNet12 conditional GAN, appears to significantly data-copy for all but its highest truncation levels, which are said to trade off between variety and fidelity. </h5> 
 {:refdef}
 
 Low truncation thresholds restrict the model to producing samples near the mode -- those it is most confident in. However it appears that in all image classes, this also leads to significant data copying. Not only are the samples less diverse, but they hang closer to the training set than they should. This contrasts with the BigGAN authors' suggestion that truncation level trades off between 'variety and fidelity'. It appears that it might trade off between 'copying and not copying' the training set. 
