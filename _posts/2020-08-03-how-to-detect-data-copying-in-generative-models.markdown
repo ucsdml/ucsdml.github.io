@@ -5,7 +5,7 @@ title:  "How to Detect Data-Copying in Generative Models"
 date:   2020-08-03 10:00:00 -0700
 categories: jekyll update
 tags: generative modeling, generalization, overfitting
-author: <a href='cmeehan@eng.ucsd.edu'>Casey Meehan</a> 
+author:  <a href='mailto:cmeehan@eng.ucsd.edu'>Casey Meehan</a> 
 paper_url: https://arxiv.org/abs/2004.05675
 code_url: https://github.com/casey-meehan/data-copying 
 excerpt: What does it mean for a generative model to overfit? We formalize the notion of 'data-copying', when a generative model produces only slight variations of the training set and fails to express the diversity of the true distribution. To catch this form of overfitting, we propose a three-sample hypothesis test that is entirely model agnostic. Our experiments indicate that several standard tests condone data-copying, and contemporary generative models like VAEs and GANs can commit data-copying. 
@@ -21,9 +21,9 @@ Overfitting is a basic stumbling block of any learning process. Take learning to
 
 It is well understood that our models tend to do the same -- deftly regurgitating their training data, yet struggling to generalize to unseen examples similar to the training data. Learning theory has nicely formalized this in the supervised setting. Our classification and regression models start to overfit when we observe a gap between training and (held-out) test prediction error, as in the above figure for the overly complex models.  
 
-This notion of overfitting relies on being able to measure prediction error or perhaps log likelihood of the labels, which is rarely a barrier in the supervised setting; supervised models generally output low dimensional, simple predictions. Such is not the case in the generative setting where we ask models to output original, high dimensional, complex entities like images or natural language. Here, we certainly lack any notion of prediction error and likelihoods are intractable for many of today's generative models like VAEs and GANs: VAEs only provide a lower bound of the data likelihood, and GANs only leave us with their samples.
+This notion of overfitting relies on being able to measure prediction error or perhaps log likelihood of the labels, which is rarely a barrier in the supervised setting; supervised models generally output low dimensional, simple predictions. Such is not the case in the generative setting where we ask models to output original, high dimensional, complex entities like images or natural language. Here, we certainly lack any notion of prediction error and likelihoods are intractable for many of today's generative models like VAEs and GANs: VAEs only provide a lower bound of the data likelihood, and GANs only leave us with their samples. This prevents us from simply measuring the gap between train and test accuracy/likelihood and calling it a day as we do with supervised models. 
 
-Without a tractable likelihood, we evaluate generative models by comparing their generated samples with those of the true distribution, as in the following figure. Here, a two-sample test only uses a training sample and a generated sample. A three-sample test uses an additional held out test sample from the true distribution.  
+Instead, we evaluate generative models by comparing their generated samples with those of the true distribution, as in the following figure. Here, a two-sample test only uses a training sample and a generated sample. A three-sample test uses an additional held out test sample from the true distribution.  
 
 {:refdef: style="text-align: center;"}
 <img src="/assets/2020-08-03-data-copying/unsupervised_setting_2.png" width="75%">
@@ -131,7 +131,10 @@ To test how VAE complexity relates to data-copying, we train 20 VAEs on  MNIST w
 
 {:refdef: style="text-align: center;"}
 <img src="/assets/2020-08-03-data-copying/VAE_overfitting.png" width="49%">
-<img src="/assets/2020-08-03-data-copying/VAE_gen_gap.png" width="46%">
+<img src="/assets/2020-08-03-data-copying/VAE_gen_gap.png" width="46%"> 
+{:refdef}
+{:refdef: style="text-align: center;"}
+<h5>The data-copying $C_T$ statistic (left) captures overfitting in overly complex VAEs. The train/test gap in ELBO (right), meanwhile, does not.</h5>
 {:refdef}
 
 Recall that $C_T \ll 0$ indicates data-copying and $C_T \gg 0$ indicates underfitting. We see (above, left) that overly complex models (towards the left of the plot) tend to copy their training set, and simple models (towards the right of the plot) tend to underfit, just as we might expect. Furthermore, $C_T = 0$ approximately coincides with the maximum ELBO, the VAE's likelihood lower bound. For comparison, take the generalization gap of the VAEs' ELBO on the training and test sets (above, right). The gap remains large for both overly complex models ($d > 50$) and simple models ($d < 50$). With the ELBO being a lower bound to the likelihood, it is difficult to interpret precisely why this happens. Regardless, it is clear that the ELBO gap is a compartively imprecise measure of overfitting.      
@@ -141,13 +144,19 @@ While the VAEs exhibit increasing data-copying with model complexity *on average
 {:refdef: style="text-align: center;"}
 <img src="/assets/2020-08-03-data-copying/VAE_cells.png" width="90%">
 {:refdef}
+{:refdef: style="text-align: center;"}
+<h5> A VAE's datacopied (left) vs. underfit (right) cells of the MNIST instance space.</h5> 
+{:refdef}
 
 The two strips exhibit two regions of the same VAE. The bottom row of each shows individual generated samples from the cell, and the top row shows their training nearest neighbors. We immediately see that the data-copied region (left, $Z_U^\pi = -8.54$) practically produces blurry replicas of its training nearest neighbors, while the underfit region (right, $Z_U^\pi = +3.3)$ doesn't appear to produce samples that look like any training image.   
 
 Extending these tests to a more complex and practical domain, we check the ImageNet-trained [BigGAN](https://arxiv.org/abs/1809.11096) model for data-copying. Being a conditional GAN that can output images of any single ImageNet 12 class, we condition on three separate classes and treat them as three separate models: Coffee, Soap Bubble, and Schooner. Here, it is not so simple to re-train GANs of varying degrees of complexity as we did before with VAEs. Instead, we modulate the model's 'trunction threshold': a level beyond which all inputs are resampled. A larger truncation threshold allows for higher variance latent input, and thus higher variance outputs.     
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2020-08-03-data-copying/GAN_overfitting.png" width="60%">
+<img src="/assets/2020-08-03-data-copying/GAN_overfitting.png" width="60%"> 
+{:refdef}
+{:refdef: style="text-align: center;"}
+<h5> BigGan, an ImageNet12 conditional GAN, appears to significantly data-copy for all but its highest truncation levels, which are said to trade off between fidelity and diversity. </h5> 
 {:refdef}
 
 Low truncation thresholds restrict the model to producing samples near the mode -- those it is most confident in. However it appears that in all image classes, this also leads to significant data copying. Not only are the samples less diverse, but they hang closer to the training set than they should. This contrasts with the BigGAN authors' suggestion that truncation level trades off between 'variety and fidelity'. It appears that it might trade off between 'copying and not copying' the training set. 
@@ -157,6 +166,9 @@ Again, even the least copying models with maximized truncation (=2) exhibit data
 
 {:refdef: style="text-align: center;"}
 <img src="/assets/2020-08-03-data-copying/GAN_cells.png" width="95%">
+{:refdef}
+{:refdef: style="text-align: center;"}
+<h5> Examples from BigGan's data-copied (left) and underfit (right) cells of the 'coffee' (top) and 'soap bubble' (bottom) classes.</h5>
 {:refdef}
 
 The left two strips show show data-copied cells of the coffee and bubble instance spaces (low $Z_U^\pi$), and right two strips show underfit cells (high $Z_U^\pi$). The bottom row of each strip shows a subset of generated images from that cell, and the top row training images from the cell. To show the diversity of the cell, these are not necessarily the generated samples' training nearest neighbors as they were in the MNIST example.  
