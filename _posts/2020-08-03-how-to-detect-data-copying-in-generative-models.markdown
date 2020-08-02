@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title:  "How to Detect Data-Copying in Generative Models" 
-date:   2020-08-03 10:00:00 -0700
+date:   2020-07-03 10:00:00 -0700
 categories: jekyll update
 tags: generative modeling, generalization, overfitting
 author:  <a href='mailto:cmeehan@eng.ucsd.edu'>Casey Meehan</a> 
