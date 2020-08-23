@@ -5,7 +5,7 @@ title:  "Towards Physics-informed Deep Learning for Turbulent Flow Prediction"
 date:   2020-08-23
 categories: jekyll update
 tags: turbulence
-author:  <a href='mailto:ruw020@ucsd.edu'>Rui Wang</a> and <a href='mailto:kkashinath@lbl.gov'>Karthik Kashinath</a> and <a href='mailto:mmustafa@lbl.gov'>Mustafa Mustafa</a>  and <a href='mailto:aalbert@lbl.gov'>Adrian Albert</a>  and <a href='mailto:roseyu@eng.ucsd.edu'>Rose Yu</a> 
+author:  <a href='mailto:ruw020@ucsd.edu'>Rui Wang</a>, <a href='mailto:kkashinath@lbl.gov'>Karthik Kashinath</a>, <a href='mailto:mmustafa@lbl.gov'>Mustafa Mustafa</a>, <a href='mailto:aalbert@lbl.gov'>Adrian Albert</a> and <a href='mailto:roseyu@eng.ucsd.edu'>Rose Yu</a> 
 
 paper_url: https://arxiv.org/abs/1911.08655
 code_url: https://github.com/Rose-STL-Lab/Turbulent-Flow-Net
