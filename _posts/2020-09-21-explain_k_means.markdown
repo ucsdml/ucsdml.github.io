@@ -1,7 +1,7 @@
 ---
 layout: post
 mathjax: true
-title:  "Explainable 2-means Clustering: Five Lines Proof"
+title:  "Explainable k-means Clustering"
 date:   2020-09-21 10:00:00 -0700
 categories: jekyll update
 tags: explainable
@@ -9,140 +9,242 @@ author:  <a href='mailto:navefrost@mail.tau.ac.il'>Nave Frost</a>, <a href='mail
 
 paper_url: https://proceedings.icml.cc/paper/2020/file/8e489b4966fe8f703b5be647f1cbae63-Paper.pdf
 code_url: https://github.com/navefr/ExKMC
-excerpt: In a previous post, we discussed tree-based clustering and how to develop explainable clustering algorithms with provable guarantees. Now we will show <em>why</em> only one feature is enough to define a good 2-means clustering. And we will do it using only 5 inequalities (!)
+excerpt: Popular algorithms for learning decision trees can be arbitrarily bad for clustering. We present a new algorithm for explainable clustering that has provable guarantees --- the Iterative Mistake Minimization (IMM) algorithm. This algorithm exhibits good results in practice. It's running time is comparable to KMeans implemented in sklearn. So our method gives you explanations basically for free. Our code is available on github. 
 ---
 
-**TL;DR:** we will show *why* only one feature is enough to define a good $2$-means clustering. And we will do it using only 5 inequalities (!) 
-In a [previous post](intro_explain_k_meansmarkdown.html), we explained what is an explainable clustering.
+**TL;DR:** 
+Explainable AI has gained a lot of interest in the last few years, but effective methods for unsupervised learning are scarce. And the rare methods that do exist do not have provable guarantees. We present a new algorithm for explainable clustering that is provably good for $k$-means clustering --- the Iterative Mistake Minimization (IMM) algorithm. Specifically, we want to build a clustering defined by a small decision tree. Overall, this post summarizes our new paper: [Explainable $k$-Means and $k$-Medians clustering](https://arxiv.org/pdf/2002.12538.pdf).
 
-### Explainable clustering 
-In a [previous post](intro_explain_k_meansmarkdown.html), we discussed why explainability is important, defined it as a small decision tree, and suggested an algorithm to find such a clustering. But why is the resulting clustering is any good?? We measure "good" by [$k$-means cost](https://en.wikipedia.org/wiki/K-means_clustering). The cost of a clustering $C$ is defined as the sum of squared Euclidean distances of each point $x$ to its center $c(x)$. Formally,
-\begin{equation}
- cost(C)=\sum_x \\|x-c(x)\\|^2, 
-\end{equation} the sum is over all points $x$ in the dataset.
+### Explainability: why?
+Machine learning models are mostly "black box". They give good results, but their reasoning is unclear. These days, machine learning is entering fields like healthcare (e.g., for a better understanding of [Alzheimer's Disease](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6543980/#:~:text=In%20the%20medical%20field%2C%20clustering,in%20labeled%20and%20unlabeled%20datasets.&text=The%20aim%20is%20to%20provide,AD%20based%20on%20their%20similarity.) and [Breast Cancer](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0118453#sec013)), transportation, or law. In these fields, quality is not the only objective. No matter how well a computer is making its predictions, we can't even imagine blindly following computer's suggestion. Can you imagine blindly medicating or performing a surgery on a patient just because a computer said so? Instead, it would be much better to provide insight into what parts of the data the algorithm used to make its prediction.
 
-In this post, we focus on the $2$-means problem, where there are only two clusters. We want to show that for every dataset there is **one** feature $i$ and **one** threshold $\theta$ such that the following simple clustering $C^{i,\theta}=(C^{i,\theta}\_1,C^{i,\theta}\_2)$ has a low cost:
-\begin{equation}
- \text{if } x\_i\leq\theta \text{ then } x\in C^{i,\theta}\_1 \text{ else } x\in C^{i,\theta}\_2.
-\end{equation}
-We call such a clustering a *threshold cut*. There might be many threshold cuts that are good, bad, or somewhere in between. We want to show that there is at least one that is good (i.e., low cost). In the [paper,](https://arxiv.org/abs/2002.12538) we prove that there is always a threshold cut, $C^{i,\theta}$, that is almost as good as the optimal clustering:
-\begin{equation}
- cost(C^{i,\theta})\leq4\cdot cost(opt),
-\end{equation} 
-where $cost(opt)$ is the cost of the optimal clustering. This means that there is a simple explainable clustering $C^{i,\theta}$ that is only $4$ times worse than the optimal one. It's independent of the dimension and the number of points. Sounds crazy, right? Let's see how we can prove it!
 
-### The minimal-mistakes threshold cut
-We want to compare two clusterings: the optimal clustering and the best threshold cut. The best threshold cut is hard to analyze, so we introduce an intermediate clustering: *the minimal-mistakes threshold cut*, $\widehat{C}$. Even though this clustering will not be the best threshold cut, it will be good enough. We will be able to prove that $cost(\widehat{C})$ is at most $4cost(opt)$. In this post we will show a slightly worse bound of $11cost(opt)$ instead of $4cost(opt)$.
+### Tree-based explainable clustering
+<!--Despite the popularity of explainability, there is limited work in unsupervised learning. To remedy it, --> 
+We study a prominent problem in unsupervised learning, $k$-means clustering. We are given a dataset, and the goal is to partition it to $k$ clusters such that the [$k$-means cost](https://en.wikipedia.org/wiki/K-means_clustering) is minimal. The cost of a clustering $C=(C^1,\ldots,C^k)$ is the sum of all points from their optimal centers, $mean(C^i)$:
 
-<!--Let's define what the minimal-mistakes cut is. -->
-We define the number of mistakes of a threshold cut $C^{i,\theta}$ as the number of points $x$ that are not in the same cluster as their optimal center $c(x)$ in $C^{i,\theta}$, i.e., number of points $x$ such that  
-\begin{equation}
-sign(\theta-x_i) \neq sign(\theta-c(x)\_i).
-\end{equation} 
-The *minimal-mistakes clustering* is the threshold cut that has the minimal number of mistakes.  Take a look at the next figure for an example.
+\\[cost(C)=\sum_{i=1}^k\sum_{x\in C^i} \lVert x-mean(C^i)\rVert ^2.\\]
+
+
+For any cluster, $C^i$, one possible explanation of this cluster is $mean(C^i)$. In a low-cost clustering, the center is close to its points, and they are close to each other. For example, see the next figure. 
+
+
+{:refdef: style="text-align: center; float: left"}
+<figure class="image" style="float: left">
+ <img src="/assets/2020-09-21-explain_k_means/intro_IMM_blog_pic_1.png" width="40%" style="margin: 0 auto">
+ <figcaption>
+  Near optimal 5-means clustering
+ </figcaption>
+</figure>
+{:refdef}
+
+Unfortunately, this explanation is not as useful as it could be. The centers themselves may depend on all the data points and all the features in a complicated way. We instead aim to develop a clustering method that is explainable by design. To explain why a point is in a cluster, we will only need to look at small number of features, and we will just evaluate a threshold for each feature one by one. This allows us to extract information about which features cause a point to go to one cluster compared to another. This method also means that we can derive an explanation that does not depend on the centers.
+
+More formally, at each step we test if $x_i\leq \theta$ or not, for some feature $i$ and threshold $\theta$. We call this test a **split**. According to the test's result, we decide on the next step. In the end, the algorithm returns the cluster identity. This procedure is exactly a decision tree where the leaves correspond to clusters. 
+
+Importantly, for the tree to be explainable it should be **small**. The smallest decision tree has $k$ leaves since each cluster must appear in at least one leaf. We call a clustering defined by a decision tree with $k$ leaves a **tree-based explainable clustering**. See the next tree for an illustration.
+
+
+<p align="center">
+<tr>
+    <td> <img src="/assets/2020-09-21-explain_k_means/intro_IMM_blog_pic_2.png" width="40%" style="margin: 0 auto"/>  </td>
+    <td> <img src="/assets/2020-09-21-explain_k_means/intro_IMM_blog_pic_3.png" width="40%" style="margin: 0 auto"/> </td>
+  </tr>
+</p>
+
+<!--
+{:refdef: style="text-align: center;"}
+<figure class="image">
+ <img src="/assets/2020-06-06/intro_IMM_blog_pic_2.png" width="40%" style="margin: 0 auto">
+ <figcaption>
+  Decision tree
+ </figcaption>
+</figure>
+{:refdef}
 
 
 {:refdef: style="text-align: center;"}
 <figure class="image">
-  <img src="/assets/2020-09-21/mistakes_example.tiff" width="30%" style="margin: 0 auto">
-  <figcaption>
-    Two optimal clusters are in red and blue. Centers are the stars.  Split (in yellow) with one mistake. This is a minimal-mistakes threshold cut, as any threshold cut has at least $1$ mistake. 
-  </figcaption>
+ <img src="/assets/2020-06-06/intro_IMM_blog_pic_3.png" width="40%" style="margin: 0 auto">
+ <figcaption>
+  Geometric representation of the decision tree
+ </figcaption>
 </figure>
 {:refdef}
+-->
 
-To prove that the minimal-mistakes threshold cut $\widehat{C}$ gives a low-cost clustering, we will do something that might look strange at first. We analyze the quality of this clustering with the optimal centers of the optimal clustering. And not the optimal centers for $\widehat{C}$. This step will only increase the cost, so why are we doing it --- because it will ease our analysis. Also, if there are not many mistakes, then the centers do not change much, like in the previous figure. So it's not much of an increase.
+On the left, we see a decision tree that defines a clustering with $5$ clusters. On the right, we see the geometric representation of this decision tree. We see that the decision tree imposes a partition to $5$ clusters aligned to the axis. The clustering looks close to the optimal clustering that we started with. Which is great. But can we do it for all datasets? How?
 
-### Playing with cost: warm-up
-Before we present the proof, let's familiarize ourselves with the $k$-means cost and explore several of its properties. It will be helpful later on!  
-#### Changing centers 
-If we change the centers of a clustering from their means (which are their optimal centers) to different centers $c=(c_1, c_2)$, then the cost can only increase. Putting this into math, denote by $cost(C,c)$ the cost of clustering $C=(C_1,C_2)$ when $c_1$ is the center of cluster $C_1$ and $c_2$ is the center of cluster $C_2$, then 
+Several algorithms are trying to find a tree-based explainable clustering like [CLTree](https://link.springer.com/chapter/10.1007/11362197_5) and [CUBT](https://d1wqtxts1xzle7.cloudfront.net/52949489/09e41508aeaf39a453000000.pdf?1493812476=&response-content-disposition=inline%3B+filename%3DClustering_using_Unsupervised_Binary_Tre.pdf&Expires=1596413380&Signature=WaxRD8LssFz4XMuD2C~m1oB62igf7B5Iea~lCDhv7VcU68ZpkbeMXuHop~qZnKEbuqPMyc6sWwFHFQulHJ1XSRnhjNHix93EhB~LS-dVIlwtB9aB6qKHgefuszHTj-igogeWfocU~VHCOI5VfeozOfDJf-S4mWZBc7~En2rdcTDqz~c2y8ykT9oyeYpRzwnfSd5phmE3VHWln9rSFAJYB4PhxlcuP8sD7MkJgkJ7rx666LKxQY5MoR3qBqiwUwkYZbLN3GZtDLqeetcKGO94j2hW8K6mIlFk625-1QrP49ZIlmNJzlylaKNyqJ1ebQHBp9EVmohCB50joYMtIU2aQQ__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA). But we are the first to give formal guarantees. We first need to define the quality of an algorithm. It's common that unsupervised learning problems are [NP-hard](http://cseweb.ucsd.edu/~dasgupta/papers/kmeans.pdf). Clustering is no exception.  So it is common to settle for an approximated solution. A bit more formal, an algorithm that returns a tree-based clustering $T$ is an *$a$-approximation* if $cost(T)\leq a\cdot cost(opt),$ where $opt$ is the clustering that minimizes the $k$-means cost.
 
-\begin{align}
- cost(C) &=  \sum_{x\in C_1} \\|x-mean(C_1)\\|^2 + \sum_{x\in C_2} \\|x-mean(C_2)\\|^2 \newline &\leq \sum_{x\in C_1} \\|x-c_1\\|^2 + \sum_{x\in C_2} \\|x-c_2\\|^2 = cost(C,c).
-\end{align} 
-What if we further want to change the centers from some arbitrary centers $(c_1, c_2)$ to other arbitrary centers $(m_1, m_2)$? How the does the cost change? Can we bound it? To our rescue comes the (almost) triangle inequality that states that for any two vectors $x,y$: 
-\begin{equation}
-\\|x+y\\|^2 \leq 2\\|x\\|^2+2\\|y\\|^2. 
-\end{equation}
-This implies that the cost of changing the centers from $c=(c_1, c_2)$ to $m=(m_1, m_2)$ is bounded by
-\begin{equation}
- cost(C,c)\leq 2cost(C,m)+2|C_1|\\|c_1-m_1\\|^2+2|C_2|\\|c_2-m_2\\|^2.
-\end{equation} 
 
-#### Decomposing the cost
-The cost can be easily decomposed with respect to the data points and the features. Let's start with the data points. For any partition of the points in $C$ to $S_1$ and $S_2$, the cost can be rewritten as 
-\begin{equation}
-cost(C,c)=cost(C \cap S_1,c)+cost(C \cap S_2,c).
-\end{equation}
-The cost can also be decomposed with respect to the features. Because we are using the Euclidean distance. To be more specific, the cost incur by the $i$-th feature is $cost\_i(C,c)=\sum\_{x}(x\_i-c(x)\_i)^2,$ and the total cost is equal to
-\begin{equation}
- cost(C,c)=\sum_i cost_i(C,c).
-\end{equation} 
-If the last equation is unclear just recall the definition of the cost ($c(x$) is the center of a point $x$):
-\begin{equation}
-cost(C,c)=\sum\_{x}\\|x-c(x)\\|^2=\sum\_i\sum\_{x}(x\_i-c(x)\_i)^2=\sum\_icost\_i(C,c).
-\end{equation}
+### General scheme
+Many supervised learning algorithms learn a decision tree, can we use one of them here? Yes, after we transform the problem into a supervised learning problem! How might you ask? We can use any clustering algorithm that will return a good, but not explainable clustering. These will form the labeling. Next, we can use a supervised algorithm that learns a decision tree. Let's summarize these three steps:
+1. Find a clustering using some clustering algorithm
+2. Label each example according to its cluster
+3. Call a supervised algorithm that learns a decision tree
 
-### The 5-line proof
-Now we are ready to prove that $\widehat{C}$ is only a constant factor worse than the optimal $2$-means clustering:
-\begin{equation}
-cost(\widehat{C})\leq 11\cdot cost(opt).
-\end{equation}
-We first change the centers to the optimal centers $c^\*=(mean(C^\*\_1),mean(C^\*\_2))$.  Recall from the warm-up that this can only increase the cost:
-\begin{equation}
-cost(\widehat{C})\leq cost(\widehat{C},c^{\*}) \quad (1)
-\end{equation}
-Next we use one of the decomposition properties of the cost. We partition the dataset into the set of points that are correctly labeled, $X^{cor}$, and those that are not, $X^{wro}$.
+
+Which algorithm can we use in step 3? Maybe the popular ID3 algorithm?
+
+### Can we use the ID3 algorithm?
+Short answer: no.
+
+One might hope that in step 3, in the previous scheme, the known [ID3](https://link.springer.com/content/pdf/10.1007/BF00116251.pdf) algorithm can be used (or one of its variants like [C4.5](https://link.springer.com/article/10.1007/BF00993309)). We will show that this does not work. There are datasets where ID3 will perform poorly. Here is an example:
 
 {:refdef: style="text-align: center;"}
 <figure class="image">
-  <img src="/assets/2020-09-21/mistakes_example_wrong.tiff" width="30%" style="margin: 0 auto">
-  <figcaption>
-    The same dataset and split as before. Point with a grey circle is in the wrong cluster and is the only member in $X^{wro}$. All other points have the same cluster assignment as the optimal clustering and are in $X^{cor}$.
-  </figcaption>
+ <img src="/assets/2020-09-21-explain_k_means/intro_IMM_blog_pic_4.png" width="40%" style="margin: 0 auto">
+ <figcaption>
+  ID3 perform poorly on this dataset
+ </figcaption>
 </figure>
 {:refdef}
 
-Thus, we can rewrite the last term as
-\begin{equation}
-cost(\widehat{C},c^{\*})=cost(\widehat{C}\cap X^{cor},c^{\*})+cost(\widehat{C}\cap X^{wro},c^{\*}) \quad (2)
-\end{equation}
+The dataset is composed of three clusters, as you can see in the figure above. Two large clusters (0 and 1 in the figure) have centers (-2, 0) and (2, 0) accordingly and small noise. The third cluster (2 in the figure) is composed of only two points that are very, very (very) far away from clusters 0 and 1. Given these data, ID3 will prefer to maximize the information gain and split between clusters 0 and 1. Recall that the final tree has only three leaves. This means that in the final tree, one point in cluster 2 must be with cluster 0 or cluster 1. Thus the cost is enormous.
+To solve this problem, we design a new algorithm called [*Iterative Mistake Minimization (IMM)*](https://proceedings.icml.cc/paper/2020/file/8e489b4966fe8f703b5be647f1cbae63-Paper.pdf).
 
-The first term in (2) is easy to bound: it's at most $cost(opt)$. So from now on we focus on the second term.
+### IMM algorithm for explainable clustering
+We learned that the ID3 algorithm cannot be used in step 3 at the general scheme. Before we give up on this scheme, can we use a different decision-tree algorithm? Well, since we wrote this post, you probably know the answer: there is such an algorithm, the IMM algorithm.
 
-Let's change the centers once more, so that $X^{wro}$ will have the correct centers. The correct centers of $X^{wro}$ are the same centers $c^\*$, but the order is different. 
-Using the decomposition property we discussed earlier, the second term in (2) is at most
-
-\\
-\begin{equation}
-2cost(opt)+2|X^{wro}|\cdot\\|c^{\*}\_1-c^{\*}\_2\\|^2 \quad (3)
-\end{equation}
-
-Now we've reached the main step in the proof. We show that the second term in (3) is bounded by $8cost(opt)$. We first decompose $cost(opt)$ using the features. Then, all we need to show is that:
-
-\begin{equation}
-cost_i(opt)\geq\left(\frac{|c^{\*}\_{1,i}-c^{\*}\_{2,i}|}{2}\right)^2|X^{wro}| \quad (4)
-\end{equation}
-
-The trick is, for each feature, to focus on the threshold cut defined by the middle point between the two optimal centers. Since $\widehat{C}$ is the minimal-mistakes clustering we know that in every threshold cut there are at least $\|X^{wro}\|$ mistakes. Each mistake contributes at least half the distance between the two centers.
-
+We build the tree greedily from top to bottom. Each step we take the split (i.e., feature and threshold) that minimizes a new parameter called a **mistake**. A point $x$ is a mistake for node $u$ if $x$ and its center $c(x)$ reached $u$ and then separated by $u$'s split. See the next figure for an example of a split with one mistake.
 {:refdef: style="text-align: center;"}
 <figure class="image">
-  <img src="/assets/2020-09-21/IMM_blog_pic_4.tiff" width="30%" style="margin: 0 auto">
-  <figcaption>
-Proving step $4.$ Projecting to feature $i$. Points in blue belong to the first cluster, and in red to the second. We focus on the cut which in the middle-point between the two optimal centers. 
-  </figcaption>
+ <img src="/assets/2020-09-21-explain_k_means/mistakes_example.png" width="40%" style="margin: 0 auto">
+ <figcaption>
+  Split (in yellow) with one mistake. Two optimal clusters are in red and blue. Centers are the stars.
+ </figcaption>
 </figure>
 {:refdef}
 
-This figure shows how to prove step (4). We see that there is $1$ mistake, which is the minimum possible. This means that even the optimal clustering must pay for at least half the distance between the centers for each of these mistakes. This gives us a lower bound on $cost_i(opt)$ in this feature. Then we can sum over all the features to see that the second term of (3) is at most $8cost(opt)$, which is what we wanted. Since the whole expression in (3) is at most $10cost(opt)$, and we lose another $cost(opt)$ from the first term of (2), we can put these together to get
-<!--Summing everything together we achieve our goal:-->
-\begin{equation}
- cost(\widehat{C})\leq1 1\cdot cost(opt) \quad (5)
-\end{equation} 
-That's it!
+<!--For another example of the mistakes concept, let's go back to the previous dataset where ID3 failed. Focus on the first split again. The ID3 split has one mistake since one of the points in cluster $2$ will be separated from its center. On the other hand, the horizontal split has $0$ mistakes: the two large clusters will go with their centers to one side of the tree, and the small cluster will go with its center to the other side of the tree. -->
 
-### Epilogue: improvements
-The bound that we got, $11$, is not the best possible. With more tricks we can get a bound of $4$. One of them is using Hall's theorem. Similar ideas provide a $2$-approximation to the optimal $2$-medians clustering as well.
-To complement our upper bounds, we also prove lower bounds showing that any threshold cut must incur almost $3$-approximation for $2$-means and almost $2$-approximation for $2$-medians.
+To summarize, the high-level description of the IMM algorithm: &nbsp;
+<!--<center>
+<span style="font-family:Papyrus; font-size:2em;align-self: center;">As long as there is more than one center
+ <br> find the split with minimal number of mistakes</span>
+</center>
+-->
+<center>
+<span style="font-size:larger;">
+As long as there is more than one center
+ <br> find the split with minimal number of mistakes
+</span>
+</center>
+&nbsp;
+ 
+
+
+<!--What if there are no mistakes. 
+The main definition that we need is a mistake:
+Creare a different figure that explains a mistake with small number of points 
+-->
+
+<!--
+<center>
+<span style="font-family:Papyrus; font-size:2em;align-self: center;">If a point and its center diverge,
+ <br> then it counts as a mistake</span>
+</center>
+
+
+<div class="definition"> [mistake at node $u$]. 
+If a point and its center end up at different leafs, then it counts as a mistake.
+</div>
+... Explain what is a split early on ... 
+-->
+
+
+
+
+<!---
+{% highlight python %}
+def IMM(points, centers):
+ node = new Node()
+ if |centers| > 1:
+  i, theta = find_split(points, centers)
+  node.condition = 'x_i <= theta'
+
+  points_left_mask = points[:,i] <= theta
+  centers_left_mask = centers[:,i] <= theta
+
+  node.left = IMM(points[points_left_mask], centers[centers_left_mask])
+  node.right = IMM(points[~points_left_mask], centers[~centers_left_mask])
+ else:
+  node.label = centers
+
+ return node
+
+def find_split(points, centers):
+ for i in range(d):
+  l = min(centers[:,i])
+  r = max(centers[:,i])
+ i,theta = argmin_{i,l <= theta < r} mistakes(i, theta)
+
+ return i,theta
+{% endhighlight %}
+
+-->
+
+
+Here is an illustration of the IMM algorithm. We use $k$-means++ with $k=5$ to find a clustering for our dataset. Each point is colored with its cluster label. At each node in the tree, we choose a split with a minimal number of mistakes. We stop if a node contains only one center, we call it *homogeneous*. In the end, we stop where each of the $k=5$ centers is in its own leaf. This defines the explainable clustering on the left.
+<center>
+<img src="/assets/2020-09-21-explain_k_means/imm_example_slow.gif" width="600" height="320" />
+</center>
+
+The algorithm is guaranteed to perform well. For any dataset. See the next theorem.
+<div class="theorem">
+IMM is an $O(k^2)$-approximation to the optimal $k$-means clustering.
+</div>
+
+This theorem shows that we can always find a small tree, with $k$ leaves, such that the tree-based clustering is only $O(k^2)$ times worse in terms of the cost.  IMM efficiently find this explainable clustering. Importantly, this approximation is independent of the dimension and the number of points. A proof for the case $k=2$ will appear in a [follow-up post](explain_2_means.html), and you can read the proof for general $k$ in the paper. Intuitively, we discovered that the number of mistakes is a good indicator for the $k$-means cost, and so, minimizing the number of mistakes is an effective way to find a low-cost clustering. <!-- Surprisingly, we can also use a tree with $k$ leaves, which means that IMM produces an explainable clustering.-->
+
+#### Running Time
+
+What is the running time of the IMM algorithm? With an efficient implementation, using dynamic programming, the running time is $O(kdn\log(n)).$ Why? For each of the $k-1$ inner nodes and each of the $d$ features, we can find the split that minimizes the number of mistakes for this node and feature, in time $O(n\log(n)).$
+
+For $2$-means one can do better than running IMM: going over all possible $(n-1)d$ cuts and find the best one. The running time is $O(nd^2+nd\log(n))$.
+
+### Results Summary
+In each cell in the following table, we write the approximation factor. We want this value to be small for the upper bounds and large for the lower bounds.  In $2$-medians, the upper and lower bounds are pretty tight, about $2$. But, there is a large gap for $k$-means and $k$-median: the lower bound is $\log(k)$, while the upper bound is $\mathsf{poly}(k)$. 
+
+<center>
+<table style="text-align: center">
+<thead>
+ <tr>
+  <th></th>
+  <th colspan="2" style="text-align: center">$k$-medians</th>
+  <th colspan="2" style="text-align: center">$k$-means</th>
+ </tr>
+  <tr>
+  <th></th>
+  <th> $k=2$ </th>
+  <th> $k>2$ </th>
+  <th> $k=2$ </th>
+  <th> $k>2$ </th>
+ </tr>
+</thead>
+<tbody>
+ <tr>
+  <td> <strong>Lower</strong> </td>
+  <td> $2-\frac1d$ </td>
+  <td> $\Omega(\log k)$ </td>
+  <td> $3\left(1-\frac1d\right)^2$ </td>
+  <td> $\Omega(\log k)$ </td>
+ </tr>
+ <tr>
+  <td> <strong>Upper</strong> </td>
+  <td> $2$ </td>
+  <td> $O(k)$ </td> 
+  <td> $4$ </td>
+  <td> $O(k^2)$ </td>
+ </tr>
+</tbody>
+</table>
+</center>
+
+
+### What's next
+1. IMM exhibits excellent results in practice on many datasets, see [this](https://arxiv.org/abs/2006.02399). It's running time is comparable to KMeans implemented in sklearn. We implemented the IMM algorithm, it's [here](https://github.com/navefr/ExKMC). Try it yourself.
+2. We plan to have several posts on explainable clusterings, here is the [second](explain_2_means.html) in the series, stay tuned for more!
+3. In a follow-up work, we explore the tradeoff between explainability and accuracy. If we allow a slightly larger tree, can we get a lower cost? We introduce the [ExKMC](https://arxiv.org/abs/2006.02399), "Expanding Explainable $k$-Means Clustering", algorithm that builds on IMM.
+4. Found cool applications of IMM? Let us know!
