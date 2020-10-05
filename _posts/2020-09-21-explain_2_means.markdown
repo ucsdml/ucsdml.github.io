@@ -136,12 +136,13 @@ Proving step $4.$ Projecting to feature $i$. Points in blue belong to the first 
 </figure>
 {:refdef}
 
-This figure shows how to prove step (4). We see that there is $1$ mistake, which is the minimum possible. This means that even the optimal clustering must pay for at least half the distance between the centers for each of these mistakes. This gives us a lower bound on $cost_i(opt)$ in this feature. Then we can sum over all the features to see that the second term of (3) is at most $8cost(opt)$, which is what we wanted. Since the whole expression in (3) is at most $10cost(opt)$, and we lose another $cost(opt)$ from the first term of (2), we can put these together to get
+This figure shows how to prove step (4). We see that there is $1$ mistake, which is the minimum possible. This means that even the optimal clustering must pay for at least half the distance between the centers for each of these mistakes. This gives us a lower bound on $cost_i(opt)$ in this feature. Then we can sum over all the features to see that the second term of (3) is at most $8cost(opt)$, which is what we wanted. <!--Since the whole expression in (3) is at most $10cost(opt)$, and we lose another $cost(opt)$ from the first term of (2), we can put these together to get-->
 <!--Summing everything together we achieve our goal:-->
+Putting everything together, we get exactly what we wanted to prove in this post:
 \begin{equation}
  cost(\widehat{C})\leq1 1\cdot cost(opt) \quad (5)
 \end{equation} 
-That's it!
+<!--That's it!-->
 
 ### Epilogue: improvements
 The bound that we got, $11$, is not the best possible. With more tricks we can get a bound of $4$. One of them is using Hall's theorem. Similar ideas provide a $2$-approximation to the optimal $2$-medians clustering as well.
