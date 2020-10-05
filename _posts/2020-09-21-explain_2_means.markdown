@@ -5,8 +5,11 @@ title:  "Explainable 2-means Clustering: Five Lines Proof"
 date:   2020-09-21 11:00:00 -0700
 categories: jekyll update
 tags: explainable
-author: Nave Frost, Michal Moshkovitz, Cyrus Rashtchian
-excerpt: We will show <em>why</em> only one feature is enough to define a good 2-means clustering. And we will do it using only 5 inequalities (!)
+author:  <a href='https://sites.google.com/view/michal-moshkovitz'>Michal Moshkovitz</a>, <a href='mailto:navefrost@mail.tau.ac.il'>Nave Frost</a>, <a href='https://sites.google.com/site/cyrusrashtchian/'>Cyrus Rashtchian</a>
+
+paper_url: https://proceedings.icml.cc/paper/2020/file/8e489b4966fe8f703b5be647f1cbae63-Paper.pdf
+code_url: https://github.com/navefr/ExKMC
+excerpt: In a previous post, we discussed tree-based clustering and how to develop explainable clustering algorithms with provable guarantees. Now we will show <em>why</em> only one feature is enough to define a good 2-means clustering. And we will do it using only 5 inequalities (!)
 ---
 
 **TL;DR:** we will show *why* only one feature is enough to define a good $2$-means clustering. And we will do it using only 5 inequalities (!) 

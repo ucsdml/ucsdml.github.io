@@ -5,7 +5,7 @@ title:  "Explainable k-means Clustering"
 date:   2020-09-21 10:00:00 -0700
 categories: jekyll update
 tags: explainable
-author:  <a href='mailto:navefrost@mail.tau.ac.il'>Nave Frost</a>, <a href='mailto:mmoshkovitz@eng.ucsd.edu'>Michal Moshkovitz</a>, <a href='mailto:crashtchian@eng.ucsd.edu'>Cyrus Rashtchian</a>
+author:  <a href='https://sites.google.com/view/michal-moshkovitz'>Michal Moshkovitz</a>, <a href='mailto:navefrost@mail.tau.ac.il'>Nave Frost</a>, <a href='https://sites.google.com/site/cyrusrashtchian/'>Cyrus Rashtchian</a>
 
 paper_url: https://proceedings.icml.cc/paper/2020/file/8e489b4966fe8f703b5be647f1cbae63-Paper.pdf
 code_url: https://github.com/navefr/ExKMC
