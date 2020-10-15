@@ -31,10 +31,10 @@ For any cluster, $C^i$, one possible explanation of this cluster is $mean(C^i)$.
 
 {:refdef: style="text-align: center; float: left"}
 <figure class="image" style="float: left">
- <img src="/assets/2020-10-16-explain_k_means/intro_IMM_blog_pic_1.png" width="40%" style="margin: 0 auto">
- <figcaption>
-  Near optimal 5-means clustering
- </figcaption>
+ <img src="/assets/2020-10-16-explain_k_means/intro_IMM_blog_pic_1.png" width="40%" style="margin: 0 auto">
+ <figcaption>
+  Near optimal 5-means clustering
+ </figcaption>
 </figure>
 {:refdef}
 
@@ -55,20 +55,20 @@ Importantly, for the tree to be explainable it should be **small**. The smallest
 <!--
 {:refdef: style="text-align: center;"}
 <figure class="image">
- <img src="/assets/2020-06-06/intro_IMM_blog_pic_2.png" width="40%" style="margin: 0 auto">
- <figcaption>
-  Decision tree
- </figcaption>
+ <img src="/assets/2020-06-06/intro_IMM_blog_pic_2.png" width="40%" style="margin: 0 auto">
+ <figcaption>
+  Decision tree
+ </figcaption>
 </figure>
 {:refdef}
 
 
 {:refdef: style="text-align: center;"}
 <figure class="image">
- <img src="/assets/2020-06-06/intro_IMM_blog_pic_3.png" width="40%" style="margin: 0 auto">
- <figcaption>
-  Geometric representation of the decision tree
- </figcaption>
+ <img src="/assets/2020-06-06/intro_IMM_blog_pic_3.png" width="40%" style="margin: 0 auto">
+ <figcaption>
+  Geometric representation of the decision tree
+ </figcaption>
 </figure>
 {:refdef}
 -->
@@ -79,7 +79,7 @@ Several algorithms are trying to find a tree-based explainable clustering like [
 
 
 ### General scheme
-Many supervised learning algorithms learn a decision tree, can we use one of them here? Yes, after we transform the problem into a supervised learning problem! How might you ask? We can use any clustering algorithm that will return a good, but not explainable clustering. These will form the labeling. Next, we can use a supervised algorithm that learns a decision tree. Let's summarize these three steps:
+Many supervised learning algorithms learn a decision tree, can we use one of them here? Yes, after we transform the problem into a supervised learning problem! How might you ask? We can use any clustering algorithm that will return a good, but not explainable clustering. This will form the labeling. Next, we can use a supervised algorithm that learns a decision tree. Let's summarize these three steps:
 1. Find a clustering using some clustering algorithm
 2. Label each example according to its cluster
 3. Call a supervised algorithm that learns a decision tree
@@ -94,10 +94,10 @@ One might hope that in step 3, in the previous scheme, the known [ID3](https://l
 
 {:refdef: style="text-align: center;"}
 <figure class="image">
- <img src="/assets/2020-10-16-explain_k_means/intro_IMM_blog_pic_4.png" width="40%" style="margin: 0 auto">
- <figcaption>
-  ID3 perform poorly on this dataset
- </figcaption>
+ <img src="/assets/2020-10-16-explain_k_means/intro_IMM_blog_pic_4.png" width="40%" style="margin: 0 auto">
+ <figcaption>
+  ID3 performs poorly on this dataset
+ </figcaption>
 </figure>
 {:refdef}
 
@@ -110,10 +110,10 @@ We learned that the ID3 algorithm cannot be used in step 3 at the general scheme
 We build the tree greedily from top to bottom. Each step we take the split (i.e., feature and threshold) that minimizes a new parameter called a **mistake**. A point $x$ is a mistake for node $u$ if $x$ and its center $c(x)$ reached $u$ and then separated by $u$'s split. See the next figure for an example of a split with one mistake.
 {:refdef: style="text-align: center;"}
 <figure class="image">
- <img src="/assets/2020-10-16-explain_k_means/mistakes_example.png" width="40%" style="margin: 0 auto">
- <figcaption>
-  Split (in yellow) with one mistake. Two optimal clusters are in red and blue. Centers are the stars.
- </figcaption>
+ <img src="/assets/2020-10-16-explain_k_means/mistakes_example.png" width="40%" style="margin: 0 auto">
+ <figcaption>
+  Split (in yellow) with one mistake. Two optimal clusters are in red and blue. Centers are the stars.
+ </figcaption>
 </figure>
 {:refdef}
 
@@ -122,13 +122,13 @@ We build the tree greedily from top to bottom. Each step we take the split (i.e.
 To summarize, the high-level description of the IMM algorithm: &nbsp;
 <!--<center>
 <span style="font-family:Papyrus; font-size:2em;align-self: center;">As long as there is more than one center
- <br> find the split with minimal number of mistakes</span>
+ <br> find the split with minimal number of mistakes</span>
 </center>
 -->
 <center>
 <span style="font-size:larger;">
 As long as there is more than one center
- <br> find the split with minimal number of mistakes
+ <br> find the split with minimal number of mistakes
 </span>
 </center>
 &nbsp;
@@ -143,7 +143,7 @@ Creare a different figure that explains a mistake with small number of points
 <!--
 <center>
 <span style="font-family:Papyrus; font-size:2em;align-self: center;">If a point and its center diverge,
- <br> then it counts as a mistake</span>
+ <br> then it counts as a mistake</span>
 </center>
 
 
@@ -159,34 +159,34 @@ If a point and its center end up at different leafs, then it counts as a mistake
 <!---
 {% highlight python %}
 def IMM(points, centers):
- node = new Node()
- if |centers| > 1:
-  i, theta = find_split(points, centers)
-  node.condition = 'x_i <= theta'
+ node = new Node()
+ if |centers| > 1:
+  i, theta = find_split(points, centers)
+  node.condition = 'x_i <= theta'
 
-  points_left_mask = points[:,i] <= theta
-  centers_left_mask = centers[:,i] <= theta
+  points_left_mask = points[:,i] <= theta
+  centers_left_mask = centers[:,i] <= theta
 
-  node.left = IMM(points[points_left_mask], centers[centers_left_mask])
-  node.right = IMM(points[~points_left_mask], centers[~centers_left_mask])
- else:
-  node.label = centers
+  node.left = IMM(points[points_left_mask], centers[centers_left_mask])
+  node.right = IMM(points[~points_left_mask], centers[~centers_left_mask])
+ else:
+  node.label = centers
 
- return node
+ return node
 
 def find_split(points, centers):
- for i in range(d):
-  l = min(centers[:,i])
-  r = max(centers[:,i])
- i,theta = argmin_{i,l <= theta < r} mistakes(i, theta)
+ for i in range(d):
+  l = min(centers[:,i])
+  r = max(centers[:,i])
+ i,theta = argmin_{i,l <= theta < r} mistakes(i, theta)
 
- return i,theta
+ return i,theta
 {% endhighlight %}
 
 -->
 
 
-Here is an illustration of the IMM algorithm. We use $k$-means++ with $k=5$ to find a clustering for our dataset. Each point is colored with its cluster label. At each node in the tree, we choose a split with a minimal number of mistakes. We stop if a node contains only one center, we call it *homogeneous*. In the end, we stop where each of the $k=5$ centers is in its own leaf. This defines the explainable clustering on the left.
+Here is an illustration of the IMM algorithm. We use $k$-means++ with $k=5$ to find a clustering for our dataset. Each point is colored with its cluster label. At each node in the tree, we choose a split with a minimal number of mistakes. We stop where each of the $k=5$ centers is in its own leaf. This defines the explainable clustering on the left.
 <center>
 <img src="/assets/2020-10-16-explain_k_means/imm_example_slow.gif" width="600" height="320" />
 </center>
@@ -205,39 +205,39 @@ What is the running time of the IMM algorithm? With an efficient implementation,
 For $2$-means one can do better than running IMM: going over all possible $(n-1)d$ cuts and find the best one. The running time is $O(nd^2+nd\log(n))$.
 
 ### Results Summary
-In each cell in the following table, we write the approximation factor. We want this value to be small for the upper bounds and large for the lower bounds.  In $2$-medians, the upper and lower bounds are pretty tight, about $2$. But, there is a large gap for $k$-means and $k$-median: the lower bound is $\log(k)$, while the upper bound is $\mathsf{poly}(k)$. 
+In each cell in the following table, we write the approximation factor. We want this value to be small for the upper bounds and large for the lower bounds.  In $2$-medians, the upper and lower bounds are pretty tight, about $2$. But, there is a large gap for $k$-means and $k$-median: the lower bound is $\log(k)$, while the upper bound is $\mathsf{poly}(k)$. 
 
 <center>
 <table style="text-align: center">
 <thead>
- <tr>
-  <th></th>
-  <th colspan="2" style="text-align: center">$k$-medians</th>
-  <th colspan="2" style="text-align: center">$k$-means</th>
- </tr>
-  <tr>
-  <th></th>
-  <th> $k=2$ </th>
-  <th> $k>2$ </th>
-  <th> $k=2$ </th>
-  <th> $k>2$ </th>
- </tr>
+ <tr>
+  <th></th>
+  <th colspan="2" style="text-align: center">$k$-medians</th>
+  <th colspan="2" style="text-align: center">$k$-means</th>
+ </tr>
+  <tr>
+  <th></th>
+  <th> $k=2$ </th>
+  <th> $k>2$ </th>
+  <th> $k=2$ </th>
+  <th> $k>2$ </th>
+ </tr>
 </thead>
 <tbody>
- <tr>
-  <td> <strong>Lower</strong> </td>
-  <td> $2-\frac1d$ </td>
-  <td> $\Omega(\log k)$ </td>
-  <td> $3\left(1-\frac1d\right)^2$ </td>
-  <td> $\Omega(\log k)$ </td>
- </tr>
- <tr>
-  <td> <strong>Upper</strong> </td>
-  <td> $2$ </td>
-  <td> $O(k)$ </td> 
-  <td> $4$ </td>
-  <td> $O(k^2)$ </td>
- </tr>
+ <tr>
+  <td> <strong>Lower</strong> </td>
+  <td> $2-\frac1d$ </td>
+  <td> $\Omega(\log k)$ </td>
+  <td> $3\left(1-\frac1d\right)^2$ </td>
+  <td> $\Omega(\log k)$ </td>
+ </tr>
+ <tr>
+  <td> <strong>Upper</strong> </td>
+  <td> $2$ </td>
+  <td> $O(k)$ </td> 
+  <td> $4$ </td>
+  <td> $O(k^2)$ </td>
+ </tr>
 </tbody>
 </table>
 </center>

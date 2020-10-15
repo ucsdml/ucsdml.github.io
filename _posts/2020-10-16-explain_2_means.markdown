@@ -1,7 +1,7 @@
 ---
 layout: post
 mathjax: true
-title:  "Explainable 2-means Clustering: Five Lines Proof"
+title:  "Explainable 2-means Clustering: Five Lines Proof"
 date:   2020-10-16 11:00:00 -0700
 categories: jekyll update
 tags: explainable
@@ -15,8 +15,8 @@ excerpt: In a previous post, we discussed tree-based clustering and how to devel
 **TL;DR:** we will show *why* only one feature is enough to define a good $2$-means clustering. And we will do it using only 5 inequalities (!) 
 In a [previous post](explain_k_means.html), we explained what is an explainable clustering.
 
-### Explainable clustering 
-In a [previous post](explain_k_means.html), we discussed why explainability is important, defined it as a small decision tree, and suggested an algorithm to find such a clustering. But why is the resulting clustering is any good?? We measure "good" by [$k$-means cost](https://en.wikipedia.org/wiki/K-means_clustering). The cost of a clustering $C$ is defined as the sum of squared Euclidean distances of each point $x$ to its center $c(x)$. Formally,
+### Explainable clustering 
+In a [previous post](explain_k_means.html), we discussed why explainability is important, defined it as a small decision tree, and suggested an algorithm to find such a clustering. But why the resulting clustering is any good?? We measure "good" by [$k$-means cost](https://en.wikipedia.org/wiki/K-means_clustering). The cost of a clustering $C$ is defined as the sum of squared Euclidean distances of each point $x$ to its center $c(x)$. Formally,
 \begin{equation}
  cost(C)=\sum_x \\|x-c(x)\\|^2, 
 \end{equation} the sum is over all points $x$ in the dataset.
@@ -29,10 +29,10 @@ We call such a clustering a *threshold cut*. There might be many threshold cuts 
 \begin{equation}
  cost(C^{i,\theta})\leq4\cdot cost(opt),
 \end{equation} 
-where $cost(opt)$ is the cost of the optimal clustering. This means that there is a simple explainable clustering $C^{i,\theta}$ that is only $4$ times worse than the optimal one. It's independent of the dimension and the number of points. Sounds crazy, right? Let's see how we can prove it!
+where $cost(opt)$ is the cost of the optimal 2-means clustering. This means that there is a simple explainable clustering $C^{i,\theta}$ that is only $4$ times worse than the optimal one. It's independent of the dimension and the number of points. Sounds crazy, right? Let's see how we can prove it!
 
 ### The minimal-mistakes threshold cut
-We want to compare two clusterings: the optimal clustering and the best threshold cut. The best threshold cut is hard to analyze, so we introduce an intermediate clustering: *the minimal-mistakes threshold cut*, $\widehat{C}$. Even though this clustering will not be the best threshold cut, it will be good enough. We will be able to prove that $cost(\widehat{C})$ is at most $4cost(opt)$. In this post we will show a slightly worse bound of $11cost(opt)$ instead of $4cost(opt)$.
+We want to compare two clusterings: the optimal clustering and the best threshold cut. The best threshold cut is hard to analyze, so we introduce an intermediate clustering: *the minimal-mistakes threshold cut*, $\widehat{C}$. Even though this clustering will not be the best threshold cut, it will be good enough. In the paper we prove that $cost(\widehat{C})$ is at most $4cost(opt)$. For simplicity, in this post, we will show a slightly worse bound of $11cost(opt)$ instead of $4cost(opt)$.
 
 <!--Let's define what the minimal-mistakes cut is. -->
 We define the number of mistakes of a threshold cut $C^{i,\theta}$ as the number of points $x$ that are not in the same cluster as their optimal center $c(x)$ in $C^{i,\theta}$, i.e., number of points $x$ such that  
@@ -52,9 +52,9 @@ The *minimal-mistakes clustering* is the threshold cut that has the minimal numb
 {:refdef}
 
 
-### Playing with cost: warm-up
-Before we present the proof, let's familiarize ourselves with the $k$-means cost and explore several of its properties. It will be helpful later on!  
-#### Changing centers 
+### Playing with cost: warm-up
+Before we present the proof, let's familiarize ourselves with the $k$-means cost and explore several of its properties. It will be helpful later on!  
+#### Changing centers 
 If we change the centers of a clustering from their means (which are their optimal centers) to different centers $c=(c_1, c_2)$, then the cost can only increase. Putting this into math, denote by $cost(C,c)$ the cost of clustering $C=(C_1,C_2)$ when $c_1$ is the center of cluster $C_1$ and $c_2$ is the center of cluster $C_2$, then 
 
 \begin{align}
@@ -69,12 +69,12 @@ This implies that the cost of changing the centers from $c=(c_1, c_2)$ to $m=(m_
  cost(C,c)\leq 2cost(C,m)+2|C_1|\\|c_1-m_1\\|^2+2|C_2|\\|c_2-m_2\\|^2.
 \end{equation} 
 
-#### Decomposing the cost
+#### Decomposing the cost
 The cost can be easily decomposed with respect to the data points and the features. Let's start with the data points. For any partition of the points in $C$ to $S_1$ and $S_2$, the cost can be rewritten as 
 \begin{equation}
 cost(C,c)=cost(C \cap S_1,c)+cost(C \cap S_2,c).
 \end{equation}
-The cost can also be decomposed with respect to the features. Because we are using the Euclidean distance. To be more specific, the cost incur by the $i$-th feature is $cost\_i(C,c)=\sum\_{x}(x\_i-c(x)\_i)^2,$ and the total cost is equal to
+The cost can also be decomposed with respect to the features, because we are using the squared Euclidean distance. To be more specific, the cost incur by the $i$-th feature is $cost\_i(C,c)=\sum\_{x}(x\_i-c(x)\_i)^2,$ and the total cost is equal to
 \begin{equation}
  cost(C,c)=\sum_i cost_i(C,c).
 \end{equation} 
@@ -83,7 +83,7 @@ If the last equation is unclear just recall the definition of the cost ($c(x$) i
 cost(C,c)=\sum\_{x}\\|x-c(x)\\|^2=\sum\_i\sum\_{x}(x\_i-c(x)\_i)^2=\sum\_icost\_i(C,c).
 \end{equation}
 
-### The 5-line proof
+### The 5-line proof
 Now we are ready to prove that $\widehat{C}$ is only a constant factor worse than the optimal $2$-means clustering:
 \begin{equation}
 cost(\widehat{C})\leq 11\cdot cost(opt).
@@ -111,8 +111,7 @@ cost(\widehat{C},c^{\*})=cost(\widehat{C}\cap X^{cor},c^{\*})+cost(\widehat{C}\c
 
 Let's look at this sum. The first term contains all the points that have their correct center in $c^\*$ (which is either $mean(C^\*\_1)$ or $mean(C^\*\_2)$). Hence, the first term in (2) is easy to bound: it's at most $cost(opt)$. So from now on, we focus on the second term.
 
-In the second term, all points are in $X^{wro}$, which means they were assigned to the incorrect optimal center. So let's change the centers once more, so that $X^{wro}$ will have the correct centers. The correct centers of $X^{wro}$ are the same centers $c^\*$, but the order is reversed, i.e., all points assigned to center $mean(C^\*\_1)$ are now assigned to $mean(C^\*\_2)$ and vice versa.  
-Using the decomposition property of the cost we discussed earlier we have <!--, the second term in (2) is at most-->
+In the second term, all points are in $X^{wro}$, which means they were assigned to the incorrect optimal center. So let's change the centers once more, so that $X^{wro}$ will have the correct centers. The correct centers of $X^{wro}$ are the same centers $c^\*$, but the order is reversed, i.e., all points assigned to center $mean(C^\*\_1)$ are now assigned to $mean(C^\*\_2)$ and vice versa. Using the "changing centers" property of the cost we discussed earlier, we have <!--, the second term in (2) is at most-->
 
 
 \begin{equation}
@@ -131,7 +130,7 @@ The trick is, for each feature, to focus on the threshold cut defined by the mid
 <figure class="image">
   <img src="/assets/2020-10-16-explain_2_means/IMM_blog_pic_4.png" width="30%" style="margin: 0 auto">
   <figcaption>
-Proving step $4.$ Projecting to feature $i$. Points in blue belong to the first cluster, and in red to the second. We focus on the cut which in the middle-point between the two optimal centers. 
+Proving step $4.$ Projecting to feature $i$. Points in blue belong to the first cluster, and in red to the second. We focus on the cut that is the mid-point between the two optimal centers. 
   </figcaption>
 </figure>
 {:refdef}
@@ -146,4 +145,4 @@ Putting everything together, we get exactly what we wanted to prove in this post
 
 ### Epilogue: improvements
 The bound that we got, $11$, is not the best possible. With more tricks we can get a bound of $4$. One of them is using Hall's theorem. Similar ideas provide a $2$-approximation to the optimal $2$-medians clustering as well.
-To complement our upper bounds, we also prove lower bounds showing that any threshold cut must incur almost $3$-approximation for $2$-means and almost $2$-approximation for $2$-medians.
+To complement our upper bounds, we also prove lower bounds showing that any threshold cut must incur almost $3$-approximation for $2$-means and almost $2$-approximation for $2$-medians. You can read all about it in our [paper](https://proceedings.icml.cc/paper/2020/file/8e489b4966fe8f703b5be647f1cbae63-Paper.pdf).
