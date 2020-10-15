@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title:  "Explainable k-means Clustering"
-date:   2020-09-21 10:00:00 -0700
+date:   2020-10-16 10:00:00 -0700
 categories: jekyll update
 tags: explainable
 author:  <a href='https://sites.google.com/view/michal-moshkovitz'>Michal Moshkovitz</a>, <a href='mailto:navefrost@mail.tau.ac.il'>Nave Frost</a>, <a href='https://sites.google.com/site/cyrusrashtchian/'>Cyrus Rashtchian</a>
@@ -31,7 +31,7 @@ For any cluster, $C^i$, one possible explanation of this cluster is $mean(C^i)$.
 
 {:refdef: style="text-align: center; float: left"}
 <figure class="image" style="float: left">
- <img src="/assets/2020-09-21-explain_k_means/intro_IMM_blog_pic_1.png" width="40%" style="margin: 0 auto">
+ <img src="/assets/2020-10-16-explain_k_means/intro_IMM_blog_pic_1.png" width="40%" style="margin: 0 auto">
  <figcaption>
   Near optimal 5-means clustering
  </figcaption>
@@ -47,8 +47,8 @@ Importantly, for the tree to be explainable it should be **small**. The smallest
 
 <p align="center">
 <tr>
-    <td> <img src="/assets/2020-09-21-explain_k_means/intro_IMM_blog_pic_2.png" width="40%" style="margin: 0 auto"/>  </td>
-    <td> <img src="/assets/2020-09-21-explain_k_means/intro_IMM_blog_pic_3.png" width="40%" style="margin: 0 auto"/> </td>
+    <td> <img src="/assets/2020-10-16-explain_k_means/intro_IMM_blog_pic_2.png" width="40%" style="margin: 0 auto"/>  </td>
+    <td> <img src="/assets/2020-10-16-explain_k_means/intro_IMM_blog_pic_3.png" width="40%" style="margin: 0 auto"/> </td>
   </tr>
 </p>
 
@@ -94,7 +94,7 @@ One might hope that in step 3, in the previous scheme, the known [ID3](https://l
 
 {:refdef: style="text-align: center;"}
 <figure class="image">
- <img src="/assets/2020-09-21-explain_k_means/intro_IMM_blog_pic_4.png" width="40%" style="margin: 0 auto">
+ <img src="/assets/2020-10-16-explain_k_means/intro_IMM_blog_pic_4.png" width="40%" style="margin: 0 auto">
  <figcaption>
   ID3 perform poorly on this dataset
  </figcaption>
@@ -110,7 +110,7 @@ We learned that the ID3 algorithm cannot be used in step 3 at the general scheme
 We build the tree greedily from top to bottom. Each step we take the split (i.e., feature and threshold) that minimizes a new parameter called a **mistake**. A point $x$ is a mistake for node $u$ if $x$ and its center $c(x)$ reached $u$ and then separated by $u$'s split. See the next figure for an example of a split with one mistake.
 {:refdef: style="text-align: center;"}
 <figure class="image">
- <img src="/assets/2020-09-21-explain_k_means/mistakes_example.png" width="40%" style="margin: 0 auto">
+ <img src="/assets/2020-10-16-explain_k_means/mistakes_example.png" width="40%" style="margin: 0 auto">
  <figcaption>
   Split (in yellow) with one mistake. Two optimal clusters are in red and blue. Centers are the stars.
  </figcaption>
@@ -188,7 +188,7 @@ def find_split(points, centers):
 
 Here is an illustration of the IMM algorithm. We use $k$-means++ with $k=5$ to find a clustering for our dataset. Each point is colored with its cluster label. At each node in the tree, we choose a split with a minimal number of mistakes. We stop if a node contains only one center, we call it *homogeneous*. In the end, we stop where each of the $k=5$ centers is in its own leaf. This defines the explainable clustering on the left.
 <center>
-<img src="/assets/2020-09-21-explain_k_means/imm_example_slow.gif" width="600" height="320" />
+<img src="/assets/2020-10-16-explain_k_means/imm_example_slow.gif" width="600" height="320" />
 </center>
 
 The algorithm is guaranteed to perform well. For any dataset. See the next theorem.

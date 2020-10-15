@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title:  "Explainable 2-means Clustering: Five Lines Proof"
-date:   2020-09-21 11:00:00 -0700
+date:   2020-10-16 11:00:00 -0700
 categories: jekyll update
 tags: explainable
 author:  <a href='https://sites.google.com/view/michal-moshkovitz'>Michal Moshkovitz</a>, <a href='mailto:navefrost@mail.tau.ac.il'>Nave Frost</a>, <a href='https://sites.google.com/site/cyrusrashtchian/'>Cyrus Rashtchian</a>
@@ -44,7 +44,7 @@ The *minimal-mistakes clustering* is the threshold cut that has the minimal numb
 
 {:refdef: style="text-align: center;"}
 <figure class="image">
-  <img src="/assets/2020-09-21-explain_2_means/mistakes_example.png" width="30%" style="margin: 0 auto">
+  <img src="/assets/2020-10-16-explain_2_means/mistakes_example.png" width="30%" style="margin: 0 auto">
   <figcaption>
     Two optimal clusters are in red and blue. Centers are the stars.  Split (in yellow) with one mistake. This is a minimal-mistakes threshold cut, as any threshold cut has at least $1$ mistake. 
   </figcaption>
@@ -97,7 +97,7 @@ Next we use one of the decomposition properties of the cost. We partition the da
 
 {:refdef: style="text-align: center;"}
 <figure class="image">
-  <img src="/assets/2020-09-21-explain_2_means/mistakes_example_wrong.png" width="30%" style="margin: 0 auto">
+  <img src="/assets/2020-10-16-explain_2_means/mistakes_example_wrong.png" width="30%" style="margin: 0 auto">
   <figcaption>
     The same dataset and split as before. Point with a grey circle is in the wrong cluster and is the only member in $X^{wro}$. All other points have the same cluster assignment as the optimal clustering and are in $X^{cor}$.
   </figcaption>
@@ -129,7 +129,7 @@ The trick is, for each feature, to focus on the threshold cut defined by the mid
 
 {:refdef: style="text-align: center;"}
 <figure class="image">
-  <img src="/assets/2020-09-21-explain_2_means/IMM_blog_pic_4.png" width="30%" style="margin: 0 auto">
+  <img src="/assets/2020-10-16-explain_2_means/IMM_blog_pic_4.png" width="30%" style="margin: 0 auto">
   <figcaption>
 Proving step $4.$ Projecting to feature $i$. Points in blue belong to the first cluster, and in red to the second. We focus on the cut which in the middle-point between the two optimal centers. 
   </figcaption>
