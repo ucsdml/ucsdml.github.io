@@ -5,7 +5,9 @@ title:  "The Expressive Power of Normalizing Flow Models"
 date:   2020-10-16 10:00:00 -0700
 categories: jekyll update
 tags: nf
-author: Zhifeng Kong and Kamalika Chaudhuri
+author: <a href='https://cseweb.ucsd.edu/~z4kong'>Zhifeng Kong</a> and <a href='https://cseweb.ucsd.edu/~kamalika'>Kamalika Chaudhuri</a>
+
+paper_url: http://proceedings.mlr.press/v108/kong20a/kong20a.pdf
 excerpt: Normalizing flows have received a great deal of recent attention as they allow flexible generative modeling as well as easy likelihood computation. However, there is little formal understanding of their representation power. In this work, we study some basic normalizing flows and show that (1) they may be highly expressive in one dimension, and (2) in higher dimensions their representation power may be limited.
 ---
 
@@ -39,7 +41,7 @@ The number of layers is usually very large in practice. For instance, in the MNI
 
 ### Defining the Expressivity of Normalizing Flows
 
-The invertibility of NFs may hugely restrict their expressive power, but to what extent? Our [recent paper](https://arxiv.org/abs/2006.00392) analyzes this through the following two questions:
+The invertibility of NFs may hugely restrict their expressive power, but to what extent? Our [recent paper](http://proceedings.mlr.press/v108/kong20a/kong20a.pdf) analyzes this through the following two questions:
 
 - <b>Q</b>1 (Exact transformation): Under what conditions is it possible to <b>exactly</b> transform the source distribution $q$ (e.g., a standard Gaussian) into the target distribution $p$ with a finite number of base flow layers?
 
@@ -131,7 +133,7 @@ We conclude that if $\mathcal{F}$ is the set of $(i)$ planar layers $f_{\text{pf
 Although this lower bound is polynomial in the dimension $d$, in many practical problems the dimension can be very large so the minimum depth is still an incredibly large number. This result tells us that planar layers and Householder layers are provably not very expressive under certain conditions.
 
 ### Open Problems
-This is the end of [our paper](https://arxiv.org/abs/2006.00392), but is clearly just the beginning of the story. There are a large number of open problems on the expressive power of even simple normalizing flow transformations. Below are some potential directions.
+This is the end of [our paper](http://proceedings.mlr.press/v108/kong20a/kong20a.pdf), but is clearly just the beginning of the story. There are a large number of open problems on the expressive power of even simple normalizing flow transformations. Below are some potential directions.
 
 - Just like neural networks, planar and Sylvester layers use non-linearities in their expressions. Is it possible that a certain combination of non-linearities (at different layers) can significantly improve capacity?
 - Our paper does not provide a result for very deep Sylvester flows (e.g., $>d$ layers) with smooth non-linearities. Therefore, it is interesting to provide some insights for deep Sylvester flows.
@@ -140,4 +142,4 @@ This is the end of [our paper](https://arxiv.org/abs/2006.00392), but is clearly
 
 ### More Details
 
-See [our paper on arxiv](https://arxiv.org/abs/2006.00392).
+See [our paper](http://proceedings.mlr.press/v108/kong20a/kong20a.pdf) or [the full paper on arxiv](https://arxiv.org/abs/2006.00392).
