@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title:  "The Expressive Power of Normalizing Flow Models"
-date:   2020-10-16 10:00:00 -0700
+date:   2020-10-18 10:00:00 -0700
 categories: jekyll update
 tags: nf
 author: <a href='https://cseweb.ucsd.edu/~z4kong'>Zhifeng Kong</a> and <a href='https://cseweb.ucsd.edu/~kamalika'>Kamalika Chaudhuri</a>
@@ -24,7 +24,7 @@ To address this problem for neural network based generative models, [normalizing
 In general, for complex training data like images, the normalizing flow $f$ can be a very complicated function. In practice, $f$ is usually constructed via a sequence of simple, invertible transformations, which we call base flow layers. The figure below illustrates the middle stages within the transformation from a simple source distribution to a complicated target distribution (figure from [this link](https://lilianweng.github.io/lil-log/2018/10/13/flow-based-deep-generative-models.html)).
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2020-10-16-nf/nf_model.png" width="80%">
+<img src="/assets/2020-10-18-nf/nf_model.png" width="80%">
 {:refdef}
 
 Examples of base flow layers include
@@ -70,7 +70,7 @@ As warm-up let us look at the one-dimensional case. We analyze a specific kind o
 where $u,w,b,z\in\mathbb{R}$, and $\text{ReLU}(x)=\max(x,0)$. The effect of this transformation on a density is first splitting its graph into two pieces, and then scaling one piece while keeping the other one unchanged. For example, in the figure below the first planar layer splits the blue line into the solid part and the dashed part, and scales the dashed part to the orange line. Similarly, the second planar layer splits the orange line into the solid part and the dashed part, and scales the dashed part to the green line.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2020-10-16-nf/tail_consistent_pwg.pdf" width="60%">
+<img src="/assets/2020-10-18-nf/tail_consistent_pwg.pdf" width="60%">
 {:refdef}
 
 In particular, if the blue line is Gaussian, then the orange line and the green line are also pieces of some Gaussian distributions. We call this a piecewise Gaussian distribution. Additionally, it has the consistency property: the integration of the transformed distribution should always be 1.
@@ -80,8 +80,8 @@ How does it relate to approximation? Here we use a fundamental result in real an
 In the following example, we demonstrate such approximation with 50(top) and 300(bottom) ReLU planar layers, respectively.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2020-10-16-nf/1d_ReLU_50.pdf" width="60%">
-<img src="/assets/2020-10-16-nf/1d_ReLU_300.pdf" width="60%">
+<img src="/assets/2020-10-18-nf/1d_ReLU_50.pdf" width="60%">
+<img src="/assets/2020-10-18-nf/1d_ReLU_300.pdf" width="60%">
 {:refdef}
 
 ### Exact Transformation When $d>1$
@@ -99,10 +99,10 @@ Let $L(z)=\log p(f(z))-\log q(z)$. Then, the topology condition says the dimensi
 Since it is not easy to plot $\\{\nabla_z L(z):z\in\mathbb{R}^d\\}$, we demonstrate $L(z)$ in a few examples below. Each row is a group, containing plots of $q$, $p$, and $L$ from left to right.
 
 {:refdef: style="text-align: center;"}
-  &#8594; &emsp;<img src="/assets/2020-10-16-nf/general_topo_1.png" width="60%"><br /><br />
-	&#8594; &emsp;<img src="/assets/2020-10-16-nf/general_topo_2.png" width="60%"><br /><br />
-	&#8594; &emsp;<img src="/assets/2020-10-16-nf/general_topo_3.png" width="60%"><br /><br />
-	&#8594; &emsp;<img src="/assets/2020-10-16-nf/general_topo_4.png" width="60%"><br /><br />
+  &#8594; &emsp;<img src="/assets/2020-10-18-nf/general_topo_1.png" width="60%"><br /><br />
+	&#8594; &emsp;<img src="/assets/2020-10-18-nf/general_topo_2.png" width="60%"><br /><br />
+	&#8594; &emsp;<img src="/assets/2020-10-18-nf/general_topo_3.png" width="60%"><br /><br />
+	&#8594; &emsp;<img src="/assets/2020-10-18-nf/general_topo_4.png" width="60%"><br /><br />
 {:refdef}
 
 Based on the topology condition, it can be shown that if the number of neurons $M$ is less than the dimension $d$, it may even be hard to transform between simple Gaussian distributions.
@@ -115,8 +115,8 @@ We then restrict to ReLU Sylvester layers. In this case, $f$ in fact performs a 
 We demonstrate this result with two examples below, where each row is a $(q,p)$ distribution pair. The red points are peaks of the graphs, and red points on the left are transformed to red points on the right by $f$. In these cases, both $\nabla_z\log p(f(z))$ and $\nabla_z\log q(z)$ are zero vectors, which is compatible with the topology condition.
 
 {:refdef: style="text-align: center;"}
-  &#8594; &emsp;<img src="/assets/2020-10-16-nf/ReLU_topo_1.png" width="60%"><br /><br />
-	&#8594; &emsp;<img src="/assets/2020-10-16-nf/ReLU_topo_2.png" width="60%"><br /><br />
+  &#8594; &emsp;<img src="/assets/2020-10-18-nf/ReLU_topo_1.png" width="60%"><br /><br />
+	&#8594; &emsp;<img src="/assets/2020-10-18-nf/ReLU_topo_2.png" width="60%"><br /><br />
 {:refdef}
 
 As a corollary, we conclude that ReLU Sylvester layers generally do not transform between product distributions or mixture of Gaussian distributions except for very special cases.
