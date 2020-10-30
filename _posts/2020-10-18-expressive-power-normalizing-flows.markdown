@@ -65,12 +65,12 @@ Our problem is very related to the universal approximation property: the ability
 
 ### Universal Approximation When $d=1$
 
-As warm-up let us look at the one-dimensional case. We analyze a specific kind of planar layer with the ReLU activation:
+As warm-up let us look at the one-dimensional case. We show planar layers can approximate between arbitrary pairs of distributions under mild assumptions. We analyze a specific kind of planar layer with the ReLU activation:
 \\[f_{\text{pf}}(z)=z+u\ \mathrm{ReLU}(wz+b)\\]
 where $u,w,b,z\in\mathbb{R}$, and $\text{ReLU}(x)=\max(x,0)$. The effect of this transformation on a density is first splitting its graph into two pieces, and then scaling one piece while keeping the other one unchanged. For example, in the figure below the first planar layer splits the blue line into the solid part and the dashed part, and scales the dashed part to the orange line. Similarly, the second planar layer splits the orange line into the solid part and the dashed part, and scales the dashed part to the green line.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2020-10-18-nf/tail_consistent_pwg.pdf" width="60%">
+<img src="/assets/2020-10-18-nf/tail_consistent_pwg.png" width="60%">
 {:refdef}
 
 In particular, if the blue line is Gaussian, then the orange line and the green line are also pieces of some Gaussian distributions. We call this a piecewise Gaussian distribution. Additionally, it has the consistency property: the integration of the transformed distribution should always be 1.
@@ -80,23 +80,24 @@ How does it relate to approximation? Here we use a fundamental result in real an
 In the following example, we demonstrate such approximation with 50(top) and 300(bottom) ReLU planar layers, respectively.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2020-10-18-nf/1d_ReLU_50.pdf" width="60%">
-<img src="/assets/2020-10-18-nf/1d_ReLU_300.pdf" width="60%">
+<img src="/assets/2020-10-18-nf/1d_ReLU_50.png" width="60%">
+<img src="/assets/2020-10-18-nf/1d_ReLU_300.png" width="60%">
 {:refdef}
 
 ### Exact Transformation When $d>1$
 
-Next, we look at the more general case in higher-dimensional space, which is usually quite different from the one-dimensional case. We analyze Sylvester layers, a matrix-form generalization of planar layers:
+Next, we look at the more general case in higher-dimensional space, which is usually quite different from the one-dimensional case. We show exact transformation between distributions can be quite hard. Specifically, we analyze Sylvester layers, a matrix-form generalization of planar layers (note that on $\mathbb{R}$, planar layers and Sylvester layers are equivalent):
 \\[f_{\text{syl}}(z)=z+Ah(B^{\top}z+b)\\]
 where $A,B\in\mathbb{R}^{d\times m},z\in\mathbb{R}^d,b\in\mathbb{R}^m$ for some integer $m$. In particular, we call $m$ the number of neurons of $f_{\text{syl}}$ because its form is identical to a residual block with $m$ neurons in the hidden layer.
 
-Now suppose we stack a number of Sylvester layers with $M$ neurons in total, and these layers sequentially transform an input distribution $q$ to output distribution $p$. For convenience, let $f$ be the function composed of all these Sylvester layers. We show that the distribution pairs $(q,p)$ cannot be arbitrary; there is some necessary condition that must be satisfied, which we call the <b>topology matching</b> condition.
+Now suppose we stack a number of Sylvester layers with $M$ neurons in total, and these layers sequentially transform an input distribution $q$ to output distribution $p$. For convenience, let $f$ be the function composed of all these Sylvester layers. We show that the distribution pairs $(q,p)$ must obey some necessary (but not sufficient) condition, which we call the <b>topology matching</b> condition.
 
-- <b>When $h$ is a smooth function</b>
+- <b>$h$ is a smooth function</b>
 
-Let $L(z)=\log p(f(z))-\log q(z)$. Then, the topology condition says the dimension of the set of the gradient of $L$ is no more than the number of neurons. Formally,
+Let $L(z)=\log p(f(z))-\log q(z)$ be the log-det Jacobian term. Then, the topology matching condition says the dimension of the set of the gradient of $L$ is no more than the number of neurons. Formally,
 \\[\dim\\{\nabla_z L(z):z\in\mathbb{R}^d\\}\leq M\\]
-Since it is not easy to plot $\\{\nabla_z L(z):z\in\mathbb{R}^d\\}$, we demonstrate $L(z)$ in a few examples below. Each row is a group, containing plots of $q$, $p$, and $L$ from left to right.
+In other words, if $M$ is less than the above dimensionality then exact transformation is impossible no matter what smooth non-linearities $h$ are selected.
+Since it is not easy to plot $\\{\nabla_z L(z):z\in\mathbb{R}^d\\}$, we demonstrate $L(z)$ in a few examples below. Each row is a group, containing plots of $q$, $p$, and $L$ from left to right. In these examples, $M=1$ so $\nabla_z L(z)$ is a multiple a constant vector.
 
 {:refdef: style="text-align: center;"}
   &#8594; &emsp;<img src="/assets/2020-10-18-nf/general_topo_1.png" width="60%"><br /><br />
@@ -105,14 +106,14 @@ Since it is not easy to plot $\\{\nabla_z L(z):z\in\mathbb{R}^d\\}$, we demonstr
 	&#8594; &emsp;<img src="/assets/2020-10-18-nf/general_topo_4.png" width="60%"><br /><br />
 {:refdef}
 
-Based on the topology condition, it can be shown that if the number of neurons $M$ is less than the dimension $d$, it may even be hard to transform between simple Gaussian distributions.
+Based on the topology matching condition, it can be shown that if the number of neurons $M$ is less than the dimension $d$, it may even be hard to transform between simple Gaussian distributions.
 
 - <b>When $h=\text{ReLU}$</b>
 
-We then restrict to ReLU Sylvester layers. In this case, $f$ in fact performs a piecewise linear transformation in $\mathbb{R}^d$. As a result, for almost every $z\in\mathbb{R}^d$ (except for boundary points), $f$ is linear around $z$. This leads to the following topology condition: there exists a constant matrix $C$ (= the Jacobian matrix of $f(z)$) around $z$ such that
+We then restrict to ReLU Sylvester layers. In this case, $f$ in fact performs a piecewise linear transformation in $\mathbb{R}^d$. As a result, for almost every $z\in\mathbb{R}^d$ (except for boundary points), $f$ is linear around $z$. This leads to the following (pointwise) topology matching condition: there exists a constant matrix $C$ (which is the Jacobian matrix of $f(z)$) around $z$ such that
 \\[C^{\top}\nabla_z\log p(f(z))=\nabla_z\log q(z)\\]
 
-We demonstrate this result with two examples below, where each row is a $(q,p)$ distribution pair. The red points are peaks of the graphs, and red points on the left are transformed to red points on the right by $f$. In these cases, both $\nabla_z\log p(f(z))$ and $\nabla_z\log q(z)$ are zero vectors, which is compatible with the topology condition.
+We demonstrate this result with two examples below, where each row is a $(q,p)$ distribution pair. The red points ($z$) on the left are transformed to those ($f(z)$) on the right by $f$. Notice that these red points are peaks of $q$ and $p$, respectively. In these cases, both $\nabla_z\log p(f(z))$ and $\nabla_z\log q(z)$ are zero vectors, which is compatible with the topology matching condition.
 
 {:refdef: style="text-align: center;"}
   &#8594; &emsp;<img src="/assets/2020-10-18-nf/ReLU_topo_1.png" width="60%"><br /><br />
@@ -126,7 +127,8 @@ As a corollary, we conclude that ReLU Sylvester layers generally do not transfor
 It is not surprising that exact transformation between distributions is difficult. What if we loosen our goal to approximation between distributions, where we can use transformations from a certain class $\mathcal{F}$? We show that unfortunately, this is still hard under certain conditions.
 
 The way to look at this problem is to bound the minimum depth that is needed to approximate between $q$ and $p$. In other words, if we use less than this number of transformations, then it is impossible to approximate $p$ given $q$ as the source, no matter what transformations in $\mathcal{F}$ are selected. Formally, for $\epsilon>0$, we define the minimum depth as
-\\[T_{\epsilon}(p,q,\mathcal{F})=\inf\\{n: \exists \\{f_i\\}_{i=1}^n\in\mathcal{F}\text{ such that }\\|(f_1\circ\cdots\circ f_n)(q)-p\\|_1\leq\epsilon\\}\\]
+\\[T_{\epsilon}(p,q,\mathcal{F})=\inf\\{n: \exists \\{f_i\\}_{i=1}^n\in\mathcal{F}\text{ such that }\mathrm{TV}((f_1\circ\cdots\circ f_n)(q),p)\leq\epsilon\\}\\]
+where $\mathrm{TV}$ is the total variance distance.
 
 We conclude that if $\mathcal{F}$ is the set of $(i)$ planar layers $f_{\text{pf}}$ with bounded parameters and popular non-linearities including $\tanh$, sigmoid, and $\arctan$, or $(ii)$ all Householder layers $f_{\text{hh}}$, then $T_{\epsilon}(p,q,\mathcal{F})$ is not small. In detail, for any $\kappa>0$, there exists a pair of distributions $(q,p)$ on $\mathbb{R}^d$ and a constant $\epsilon$ (e.g., 0.5) such that
 \\[T_{\epsilon}(p,q,\mathcal{F})=\tilde{\Omega}(d^{\kappa})\\]
