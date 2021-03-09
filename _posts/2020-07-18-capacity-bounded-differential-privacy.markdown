@@ -6,20 +6,21 @@ date:   2020-07-18 10:00:00 -0700
 categories: jekyll update
 tags: adversarial
 author: Jacob Imola
-excerpt: Differential privacy protects user data from any adversary, no matter how powerful. In cases where the adversary is limited, we can say more. We present capacity-bounded differential privacy, the first notion of differential privacy that takes the computational capacity of the adversary into account. We prove it satisfies many of the desirable properties of differential privacy and that there are algorithms that provide a much stronger privacy guarantee under the capacity-bounded assumption.
+excerpt: Differential privacy protects user data from any adversary, no matter how powerful. In cases where the adversary is limited, we can say more. In this post, we'll cover capacity-bounded differential privacy, the first notion of differential privacy that takes the computational capacity of the adversary into account. We'll see how capacity-bounded differential privacy shares some of the desirable properties of differential privacy and has the potential to provide a much stronger privacy guarantee than standard differential privacy.
 ---
 
 Differential privacy (DP) is a very popular definition of privacy
-that has been adopted on a large scale by Google, Apple, and the U.S. Census Bureau. 
-For an introduction to the topic, the first two chapters of the [differential
+that has been adopted on a large scale by many tech companies dealing with sensitive data and, notably, [the U.S. Census Bureau](https://www.census.gov/newsroom/blogs/random-samplings/2019/02/census_bureau_adopts.html).
+For an in-depth introduction to the topic, the first two chapters of the [differential
 privacy textbook](https://www.cis.upenn.edu/~aaroth/privacybook.html) are a 
-great place to start. The goal
-of differential privacy is to release general data patterns, such 
-as a data model, without allowing any adversary to infer with $\varepsilon$
-"confidence" whether an individual participated in the dataset. We
-call this gurantee $\varepsilon$ differential privacy, and the smaller
-the $\varepsilon$, the stronger the guarantee.
-To make things concrete, we will introduce a running example of a sensitive database
+great place to start. Briefly, $\varepsilon$-
+differential privacy is a method of releasing general queries about data
+without allowing any adversary to infer with $\varepsilon$
+"confidence" whether an individual participated in the dataset. 
+The smaller the $\varepsilon$, the stronger the privacy guarantee. We'll get
+into the precise definition later.
+
+To make things concrete, let's introduce a running example of a sensitive database
 called Hospital (this example was adapted from the book [The Ethical Algorithm](https:
 //www.amazon.com/Ethical-Algorithm-Science-Socially-Design/dp/0190948205)).
 
@@ -32,57 +33,53 @@ Thomas | 69 | Male | 19115 | Y | Lung Cancer
 
 A differentially private algorithm may be able to conclude, after looking at the
 dataset, that smoking is correlated to lung cancer. However, a differentially
-private algorithm will not allow anyone with "confidence" more than
-$\varepsilon$
-to conclude that Susan has arthritis or that Susan even participated in the
-dataset (the exact definition of confidence will be defined later). 
+private algorithm will not allow anyone with confidence more than
+$\varepsilon$ to conclude the value of an individual record in the Hospital dataset, 
+for example that Susan has arthritis.
 This is an extremely strong guarantee. Even if someone with unlimited
 computational ability knew everything
 about Susan except for whether or not she has arthritis, upon seeing the result
-of a differentially private algorithm applied to Hospital, their confidence that
-Susan participated will not go up or down by more than $\varepsilon$.
+of a differentially private algorithm applied to Hospital, their confidence
+about Susan's record will not go up or down by more than about $\varepsilon$.
 
-While simple, the definition of differential privacy does not take
-into account the fact that in the real world, the adversaries who want to find 
-out something sensitive about Susan never have unlimited computational ability.
+The above promise applied to any adversary, so it is strong. However, in the
+real world, adversaries never have unlimited ability.
 In certain cases, it may be sufficient to defend ourselves against adversaries
 whose capacities are bounded somehow.
 This could be the case, for example, when our
 adversaries are automated and have a certain functional form or are programmers
 obligated to use code with functions from a specific library.
 Capacity-bounded differential privacy gives us the ability to impose a capacity
-bound on our adversaries if there is one. It is a statement about the
-maximum harm a bounded adversary can cause.
+bound on our adversaries if there is one. In this way, it enriches the original
+notion of differential privacy.
 
 ### Adversarial interpretation of differential privacy:
 
-The standard definition of differential privacy states that there should be no 
-way to distinguish a randomized algorithm $A$ when it is run on dataset $X$ from when it
-is run on dataset $X'$, where $X$ and $X'$ differ in the data of just one
-individual. There are many ways in which we may define what "distinguishing"
-means; a very general way is to bound the
-[$f$-divergence](https://en.wikipedia.org/wiki/F-divergence) between $A(X)$ and
-$A(X')$. Specifically, 
+Differential privacy considers two datasets $X$ and
+$X'$ which differ in one record---for the Hospital dataset, $X$ might be the
+unmodified data and $X'$ might be the data with Susan's ailment set to "Heart
+Disease" or even "Healthy". Informally, $A$ satisfies differential privacy if
+an adversary cannot distinguish $A(X)$ and $A(X')$ with much confidence. We 
+consider a general definition that measures the adversary's distinguishing power 
+using the [$f$-divergence](https://en.wikipedia.org/wiki/F-divergence), $D_f$.
 
 <div class="definition">
 $A$ provides $(\varepsilon, f)$-differential privacy if for all possible
 neighboring datasets $X,X'$, $D_f(A(X), A(X')) \leq \varepsilon $.
 </div>
 
-Using specific functions $f$, we can express the two most common definitions of
-differential privacy, the original 
+We use the $f$-divergence here because, as mentioned, it is very general. For 
+specific $f$, we can recover the two most 
+common definitions of differential privacy, the original 
 [$(\varepsilon, \delta)$ definition](https://arxiv.org/abs/1702.07476)
 and [Renyi differential privacy](https://arxiv.org/abs/1702.07476).
-For the rest of this paper, we assume $f$ is the function that gives the
-$\alpha$-divergence which is very closely related to the Renyi divergence of
-order $\alpha$. The exact form of $f$ does not matter for our discussion other 
-than it is convex and satisfies $f(1) = 0$.
+For this post, we don't need to consider a specific form for $f$, just remember
+that $D_f$ measures a "distance" between distributions.
 
 The inspiration behind capacity-bounded differential privacy comes from the
 variational form of the $f$-divergences, which has become widely used in
 the $f$-GAN literature (see, for example, [here](https://arxiv.org/pdf/1809.04542.pdf)). 
-Importing that result into the definition of differential privacy, we have 
-
+Substituting the variational form of $D_f$ into our definition, we get
 
 <div class="theorem">
 $A$ provides $(\varepsilon, f)$-differential privacy if for all possible
@@ -97,8 +94,12 @@ where $f^\star$ is the Fenchel dual of $f$
 (it suffices to know $f^\star$ is a positive convex function that passes through the origin.).
 </div>
 
-This gives an alternative interpretation for differential privacy. Suppose there
-is an adversary $h$ who wants to cause more harm when the database is $X$ than when it is $X'$, 
+This definition looks somewhat scary, but it's really saying what we
+mean by the informal phrase that differential privacy makes it impossible 
+for an adversary to distinguish $A(X)$ and $A(X')$ with confidence more than
+$\varepsilon$. In the above definition, our adversary
+is the function $h$ which wants to return a negative number when the database is $X$ 
+and a positive number when it is $X'$, 
 but all he can see is an output $x$ drawn from either $A(X)$ or $A(X')$. 
 He may process the output as much as he likes and ultimately decides to cause $h(x)$ 
 harm. 
