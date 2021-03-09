@@ -274,7 +274,7 @@ logarithmically as much noise in the Laplace or Gaussian mechanism compared to w
 adversary is unbounded. Since noise reduces the utility of our data analysis, this
 can result in a massive utility gain.
 
-### Conclusion YES
+### Conclusion
 
 Capacity-bounded differential privacy enhances the original definition of
 differential privacy by assuming that the adversaries who have access to
