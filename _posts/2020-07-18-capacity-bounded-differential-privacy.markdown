@@ -20,7 +20,7 @@ without allowing any adversary to infer with $\varepsilon$
 The smaller the $\varepsilon$, the stronger the privacy guarantee. We'll get
 into the precise definition later.
 
-To make things concrete, let's introduce a running example of a sensitive database
+To make things concrete, let's introduce an example of a sensitive database
 called Hospital (this example was adapted from the book [The Ethical Algorithm](https:
 //www.amazon.com/Ethical-Algorithm-Science-Socially-Design/dp/0190948205)).
 
@@ -42,11 +42,10 @@ about Susan except for whether or not she has arthritis, upon seeing the result
 of a differentially private algorithm applied to Hospital, their confidence
 about Susan's record will not go up or down by more than about $\varepsilon$.
 
-The above promise applied to any adversary, so it is strong. However, in the
-real world, adversaries never have unlimited ability.
-In certain cases, it may be sufficient to defend ourselves against adversaries
-whose capacities are bounded somehow.
-This could be the case, for example, when our
+The promise of differential privacy applies to any adversary, so it is strong. 
+However, in the real world, adversaries never have unlimited ability.
+In certain cases, it may be sufficient to assume some sort of bound on the
+capacity of an adversary. This could be the case, for example, when our
 adversaries are automated and have a certain functional form or are programmers
 obligated to use code with functions from a specific library.
 Capacity-bounded differential privacy gives us the ability to impose a capacity
@@ -82,12 +81,14 @@ the $f$-GAN literature (see, for example, [here](https://arxiv.org/pdf/1809.0454
 Substituting the variational form of $D_f$ into our definition, we get
 
 <div class="theorem">
+(Variational Form of Differential Privacy)
 $A$ provides $(\varepsilon, f)$-differential privacy if for all possible
 neighboring datasets $X,X'$ on a domain $\mathcal{X}$,
 <div style="text-align:center">
 $
 \sup_{h:\mathcal{X} \rightarrow \mathbb{R}} \mathbb{E}_{x \sim A(X)}
 [h(x)] - \mathbb{E}_{x \sim A(X')}[f^\star(h(x))]_{} \leq \varepsilon
+\hspace{3cm} (1)
 $
 </div>
 where $f^\star$ is the Fenchel dual of $f$
@@ -95,20 +96,16 @@ where $f^\star$ is the Fenchel dual of $f$
 </div>
 
 This definition looks somewhat scary, but it's really saying what we
-mean by the informal phrase that differential privacy makes it impossible 
+mean by the informal phrase that *differential privacy makes it impossible 
 for an adversary to distinguish $A(X)$ and $A(X')$ with confidence more than
-$\varepsilon$. In the above definition, our adversary
-is the function $h$ which wants to return a negative number when the database is $X$ 
-and a positive number when it is $X'$, 
-but all he can see is an output $x$ drawn from either $A(X)$ or $A(X')$. 
-He may process the output as much as he likes and ultimately decides to cause $h(x)$ 
-harm. 
-If $x$ came from $A(X)$, then he causes $\mathbb{E}\_{x \sim P}[h(x)]$ 
-harm on average. If $x$ came from $A(X')$, then he causes $\mathbb{E}\_{x \sim Q}[f^\star(h(x))]$ 
-harm on average. He wants to maximize the difference in harm caused.
+$\varepsilon$*. Equation (1) captures the adversary with the function
+$h$; we can see that it rewards an $h$ which is higher in expectation when $x$ 
+comes from $A(X)$ than when $x$ comes from $A(X')$.
+For more on this interpretation, please see the
+penultimate section about Pinsker's inequality.
 
-Viewing differential privacy through this adversarial interpretation, it is
-strightforward how we can make an assumption on the capacity of the adversary. Instead
+Viewing differential privacy through the adversarial lens, we are now able to
+formally bound the capacity of the adversary. Instead
 of letting $h$ be any function, we restrict it to a class $\mathcal{H}$ of
 functions from $\mathcal{X}$ to $\mathbb{R}$. This
 gives us the following definition:
@@ -123,91 +120,82 @@ $\sup_{h \in \mathcal{H}} \mathbb{E}_{x \sim A(X)}
 where $f^\star$ is the Fenchel dual of $f$.
 </div>
 
+Let's give a concrete example. Let $\mathcal{T}^i$ denote a decision tree
+of depth $i$. Let's assume all adversaries are programs consisting of
+conditional statements up to depth $k$. Roughly, this corresponds to the class
+$\mathcal{T}^k.$ We would then use $(\mathcal{H}^k, \varepsilon, f)$
+capacity-bounded differential privacy for suitable choices of $\varepsilon, f$
+as our privacy guarantee.
+Note that since decision trees of high-enough depth can express any function, we have
+$(\mathcal{H}^\infty, \varepsilon, f)$ capacity-bounded DP is the same as
+$(\varepsilon, f)$-DP.
+
 ### Does Capacity Bounded DP satisfy the same important properties as differential privacy?
 
 One reason differential privacy is such a great definition of privacy is that it
 behaves well in the presence of side information. **Post-processing
-invariance** ensures that no matter how smart the adversary is, they will never
-be able to worsen the privacy guarantee of $A(X)$, provided they do not have
-access to $X$ through any other means. In the formal language of DP, if $A(X)$ provides
+invariance** ensures that no matter what the adversary does, they will never
+be able to worsen the privacy guarantee of $A(X)$ provided they do not have
+access to $X$ through any other means. Formally, if $A(X)$ provides
 $(\varepsilon, f)$-DP, then for any function $M$ that takes arguments $y$ that
 do not depend on $X$, $M(A(X), y)$ provides $(\varepsilon, f)$-DP.
-Capacity-bounded DP provides post-processing invariance with a caveat that
-makes sense after some thought. If $A(X)$ provides $(\mathcal{H}, \varepsilon, f)$
-capacity-bounded DP and someone applies $M$ to $A$, then we can only guard against those
-adversaries $i$ such that $i \circ M \in \mathcal{H}$. Formally,
+Capacity-bounded DP provides post-processing invariance with a necessary caveat.
+If $A(X)$ provides $(\mathcal{H}, \varepsilon, f)$
+capacity-bounded DP but the adversary sees $M(A(X))$, $M$ could possibly
+increase the capacity of the adversary. $M$ could even be the
+worst-case function $h$ in the variational form of differential privacy. Thus, 
+we must make an assumption about $M$. Formally,
 
 <div class="theorem">
 If $A(X)$ provides $(\mathcal{H}, \varepsilon, f)$ capacity-bounded DP and
 $\mathcal{I} \circ M \subseteq \mathcal{H}$, then
-$M(A(X), y)$ provides $(\mathcal{I}, \varepsilon, f)$ capacity-bounded DP.
+$M(A(X))$ provides $(\mathcal{I}, \varepsilon, f)$ capacity-bounded DP.
 </div>
 
-An important special case of this property is when $\mathcal{H}$ is closed under
-composition and $M \in \mathcal{H}$. Then, both $A$ and $M(A, x)$ will satisfy $(\mathcal{H},
-\varepsilon, f)$ capacity-bounded DP, a result akin to post-processing
-invariance.
+In summary, in order to apply post-processing, you need to
+know what functions will be applied to $A$. However, if you are using
+capacity-bounded DP, you are assuming a bounded adversary which means you 
+know all possible adversaries that will have access to $A$ . Thus, you need to be
+careful to not post-process $A$ in a way that will break your bounded adversaries
+assumption.
 
-The second important property is **adaptive composition**. This ensures that
+The second important property is **composition**. This ensures that
 releasing two differentially private algorithms run on the same database $X$ 
-affects the privacy guarantee in a simple, predictable way. Formally, if 
-$A(X)$ provides $(\varepsilon_1,
+affects the privacy guarantee in a simple, predictable way. There are two types
+of composition: in _sequential composition_, if $A(X)$ provides $(\varepsilon_1,
 f)$-DP and $B(X)$ provides $(\varepsilon_2, f)$-DP, then the algorithm which
 releases $(A(X), B(X))$, even if $B$ depends on $A(X)$, provides
-$(\varepsilon_1 + \varepsilon_2, f)$-DP. Capacity-bounded DP provides
-composition, but not the adaptive case:
+$(\varepsilon_1 + \varepsilon_2, f)$-DP. In _parallel composition_, if $A, B$ have
+the same definitions, $X_1,X_2$ are disjoint subsets of $X$, and $A,B$ do not
+depend on each other, then
+$(A(X_1), B(X_2))$ provides $(\max\{\varepsilon_1, \varepsilon_2\}, f)$-DP.
+
+Capacity-bounded DP provides
+_non-adaptive_ sequential composition, where $B$ cannot depend on $A$:
 
 <div class="theorem">
-If $A(X)$ provides $(\mathcal{H}, \varepsilon_1, f)$ capacity-bounded DP and 
-$B(X)$ provides $(\mathcal{H}, \varepsilon_2, f)$ capacity-bounded DP, and $A$ and
+If $A(X)$ provides $(\mathcal{H}_1, \varepsilon_1, f)$ capacity-bounded DP and 
+$B(X)$ provides $(\mathcal{H}_2, \varepsilon_2, f)$ capacity-bounded DP and $A$ and
 $B$ do not depend on each other, then $(A(X),B(X))$ provides $(\mathcal{H},
-\varepsilon_1 + \varepsilon_2, f)$ capacity-bounded DP.
+\varepsilon_1 + \varepsilon_2, f)$ capacity-bounded DP with respect to the
+function class
+\[
+  \mathcal{H} = \{h(x,y): h(x,y) = h_1(x) + h_2(y), h_1 \in 
+  \mathcal{H}_1, h_2 \in \mathcal{H}_2 \}_{}
+\]
 </div>
 
-There probably are examples where fully adaptive composition is achievable for
-capacity-bounded DP. This is an exciting, open research question!
+There probably are examples where fully adaptive sequential composition is achievable for
+capacity-bounded DP. This is an exciting, open research question! Finally,
+capacity-bounded DP provides parallel composition:
 
-To see these useful properties in action on our running example, suppose we run a
-privacy-preserving algorithm $A$ on Hospital which outputs the average age of
-patients for each diagnosis. Here is
-a possible output of $A(Hospital)$:
-
-Age | Diagnosis
-62.1 | Heart Disease
-64.0 | Arthritis
-70.4 | Lung Cancer
-43.8 | Chrohn's Disease
-
-Suppose $A$ provides $(\mathcal{H}^2, f, \varepsilon)$
-capacity-bounded DP where $\mathcal{H}^2$ is the class of all
-depth 2 decision trees. Post-processing for capacity-bounded DP 
-says that if $D$ is a depth 1
-decision tree, then $D(A)$ provides $(\mathcal{H}^1, f, \varepsilon)$
-capacity-bounded DP where $\mathcal{H}^1$ is the class of all depth 1 decision
-trees. Here is a possible output of $D(A(Hospital))$:
-
-Age | Diagnosis | Output of D
-62.1 | Heart Disease | 0
-64.0 | Arthritis | 1
-70.4 | Lung Cancer| 1
-43.8 | Chrohn's Disease | 0
-
-This output will be guarded against depth-one decision trees.
-Now, suppose we want run another private function $A_2$ that computes the most common
-ailment by Zip Code. Here is a possible output of $A_2(Hospital)$:
-
-Zip Code | Diagnosis
-19146 | Heart Disease
-19118 | Arthritis
-19104 | Lung Cancer
-19146 | Chrohn's Disease
-19115 | Lung Cancer
-
-Composition tells us that if $A,A_2$ provide $(\mathcal{H}^2, f, \varepsilon)$
-capacity-bounded DP, then releasing both $A(Hospital),A_2(Hospital)$ provides $
-(\mathcal{H}^2, f, 2\varepsilon)$ capacity-bounded DP. However, composition for 
-capacity-bounded DP is not adaptive, meaning that $A_2$ must not depend on
-the output of $A_1$.
+<div class="theorem">
+Let $A(X),B(X)$ have the same definitions as the previous theorem, and recall
+they do not depend on each other. Let $X_1,X_2$
+be disjoint subsets of a dataset $X$. Then $(A(X_1), B(X_2))$ provides
+$(\mathcal{H}, \max\{\varepsilon_1, \varepsilon_2\}, f)$ capacity-bounded DP
+with $\mathcal{H}$ having the same definition as the previous theorem.
+</div>
 
 ### Can bounding the capacity of our adversaries result in meaningful harm reduction?
 
@@ -274,6 +262,62 @@ then assuming the adversaries are linearly-bounded allows us to add
 logarithmically as much noise in the Laplace or Gaussian mechanism compared to when the
 adversary is unbounded. Since noise reduces the utility of our data analysis, this
 can result in a massive utility gain.
+
+### A Pinsker-like Inequality for Capacity-bounded Adversaries
+
+We claimed that Equation (1) in the variational form of differential privacy
+measures an adversary's ability to tell apart $A(X)$ and $A(X')$. However, the
+analogy is rather weak---what is that $f^* $ doing? A much more natural quantity
+would be to get rid of the $f^*$:
+
+<div style="text-align:center">
+$
+\sup_{h:\mathcal{X} \rightarrow \mathbb{R}} \mathbb{E}_{x \sim A(X)}
+[h(x)] - \mathbb{E}_{x \sim A(X')}[h(x)]_{} \leq \varepsilon
+\hspace{3cm} (2)
+$
+</div>
+
+Of course, now we must bound $h$ to prevent (2) from being overwhelmingly large.
+The following is the variational form of the _total variation distance_
+
+<div style="text-align:center">
+$
+\sup_{h:\mathcal{X} \rightarrow [-1,1]} \mathbb{E}_{x \sim A(X)}
+[h(x)] - \mathbb{E}_{x \sim A(X')}[h(x)]_{} \leq \varepsilon
+\hspace{3cm} (3)
+$
+</div>
+The capacity-bounded version of (3) is the following:
+
+<div style="text-align:center">
+$
+\sup_{h\in \mathcal{H}} \mathbb{E}_{x \sim A(X)}
+[h(x)] - \mathbb{E}_{x \sim A(X')}[h(x)]_{} \leq \varepsilon
+\hspace{3cm} (4)
+$
+</div>
+
+We must assume that functions in $\mathcal{H}$ have range on $[-1,1]$.
+Equations (3) and (4) have a very nice interpretation: any adversary (or an
+adversary restricted to $\mathcal{H}$) is incentivized to be close to 1 when he
+believes $A(X)$ was used and be close to $-1$ when he believes $A(X')$ is used.
+(3) and (4) measure the expected advantage he has when he is not bounded and when he is.
+
+Our paper gives a connection between (4) and (1)---namely, an upper bound like
+(1) implies an upper bound like (4).
+
+<div class="theorem"> (A Pinsker-like inequality)
+Let $IPM^{\mathcal{H}}(A(X), A(X'))$ be the LHS of (4) and let
+$D_f^{\mathcal{H}}(A(X), A(X'))$ be the LHS of (1). For any distributions $P,Q$,
+\[
+  IPM^{\mathcal{H}}(P,Q) \leq 8 \sqrt{D_f^{\mathcal{H}}(P,Q)}
+\]
+</div>
+
+This means that capacity-bounded DP, which says $D_f^{\mathcal{H}}(A(X), A(X'))
+\leq \varepsilon$ implies $IPM^{\mathcal{H}}(A(X),A(X')) \leq
+8\sqrt{\varepsilon}$ which, for small $\varepsilon$, has a nice privacy interpretation.
 
 ### Conclusion
 
