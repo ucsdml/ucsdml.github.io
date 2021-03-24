@@ -328,7 +328,7 @@ Distance, and there are problems with doing this (see Section 7.1.6. of [this
 survey](https://salil.seas.harvard.edu/files/salil/files/the_complexity_of_differential_privacy.pdf)).
 Thus, the analogy is not yet perfect. For future work, we are investigating how to
 generalize our Pinsker-like inequality to $R_\alpha^{\mathcal{H}}$ for general $\alpha$
-and instead use a stronger divergence than IPM^{\mathcal{H}}(P,Q)$. Stay
+and instead use a stronger divergence than $IPM^{\mathcal{H}}(P,Q)$. Stay
 tuned!
 
 ### Conclusion
