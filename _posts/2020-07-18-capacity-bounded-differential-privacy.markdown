@@ -261,65 +261,76 @@ restricting adversaries can massively improve privacy guarantees.
 
 We claimed that Equation (1) in the variational form of differential privacy
 measures an adversary's ability to tell apart $A(X)$ and $A(X')$. However, the
-analogy is rather weak---what is that $f^* $ doing? A much more natural quantity
-would be to get rid of the $f^*$:
+analogy is somewhat unclear---what does that $f^_\alpha*$ do? A more natural quantity
+to consider would be the same equation but with no $f^*_\alpha$:
 
 <div style="text-align:center">
 $
 \sup_{h:\mathcal{X} \rightarrow \mathbb{R}} \mathbb{E}_{x \sim A(X)}
 [h(x)] - \mathbb{E}_{x \sim A(X')}[h(x)]_{} \leq \varepsilon
-\hspace{3cm} (2)
+\hspace{3cm} (3)
 $
 </div>
 
-Of course, now we must bound $h$ to prevent (2) from being overwhelmingly large.
+Of course, now we must bound $h$ to prevent (3) from being overwhelmingly large.
 The following is the variational form of the _total variation distance_
 
 <div style="text-align:center">
 $
 \sup_{h:\mathcal{X} \rightarrow [-1,1]} \mathbb{E}_{x \sim A(X)}
 [h(x)] - \mathbb{E}_{x \sim A(X')}[h(x)]_{} \leq \varepsilon
-\hspace{3cm} (3)
+\hspace{3cm} (4)
 $
 </div>
-The capacity-bounded version of (3) is the following:
+The capacity-bounded version of (4) is the following:
 
 <div style="text-align:center">
 $
 \sup_{h\in \mathcal{H}} \mathbb{E}_{x \sim A(X)}
 [h(x)] - \mathbb{E}_{x \sim A(X')}[h(x)]_{} \leq \varepsilon
-\hspace{3cm} (4)
+\hspace{3cm} (5)
 $
 </div>
 
 We must assume that functions in $\mathcal{H}$ have range on $[-1,1]$.
-Equations (3) and (4) have a very nice interpretation: any adversary (or an
+Equations (4) and (5) have a very nice interpretation: any adversary (or an
 adversary restricted to $\mathcal{H}$) is incentivized to be close to 1 when he
-believes $A(X)$ was used and be close to $-1$ when he believes $A(X')$ is used.
-(3) and (4) measure the expected advantage he has when he is not bounded and when he is.
+believes $A(X)$ was used and be close to $-1$ when he believes $A(X')$ is used,
+and the loss he incurrs when he is off is linear.
 
-Our paper gives a connection between (4) and (1)---namely, an upper bound like
-(1) implies an upper bound like (4).
+Our paper gives a connection between (5) and (1)---namely, an upper bound like
+(1) implies an upper bound like (5).
 
 <div class="theorem"> (A Pinsker-like inequality)
-Let $IPM^{\mathcal{H}}(A(X), A(X'))$ be the LHS of (4) and let
-$D_f^{\mathcal{H}}(A(X), A(X'))$ be the LHS of (1). For any distributions $P,Q$,
+Let $IPM^{\mathcal{H}}(A(X), A(X'))$ be the LHS of (5) and let
+$R_\alpha^{\mathcal{H}}(A(X), A(X'))$ be the LHS of (1). For any distributions $P,Q$,
 \[
-  IPM^{\mathcal{H}}(P,Q) \leq 8 \sqrt{D_f^{\mathcal{H}}(P,Q)}
+  IPM^{\mathcal{H}}(P,Q) \leq 8 \sqrt{R_1^{\mathcal{H}}(P,Q)}
 \]
 </div>
 
-This means that capacity-bounded DP, which says $D_f^{\mathcal{H}}(A(X), A(X'))
+This means that capacity-bounded DP, which says $R_\alpha^{\mathcal{H}}(A(X), A(X'))
 \leq \varepsilon$ implies $IPM^{\mathcal{H}}(A(X),A(X')) \leq
-8\sqrt{\varepsilon}$ which, for small $\varepsilon$, has a nice privacy interpretation.
+8\sqrt{\varepsilon}$. Thus, Equation (1) which has a challenging
+interpretation, implies Equation (5), which has a much simpler linear loss
+function. 
+
+Equation (5) measures privacy using Total Variation
+Distance, and there are problems with doing this (see Section 7.1.6. of [this
+survey](https://salil.seas.harvard.edu/files/salil/files/the_complexity_of_differential_privacy.pdf)).
+The analogy is not yet perfect. For future work, we are investigating how to
+generalize our Pinsker-like inequality to $R_\alpha^{\mathcal{H}}$ for general $\alpha$
+and instead using a stronger divergence than IPM^{\mathcal{H}}(P,Q)$. Stay
+tuned!
 
 ### Conclusion
 
 Capacity-bounded differential privacy enhances the original definition of
-differential privacy by assuming that the adversaries who have access to
-released data are bounded in capacity. Capacity-bounded DP satisfies two
-very important properties that have proven to be extremely useful for regular DP
----post-processing invariance and composition. Finally, there
-are examples where making the capacity-bounded assumption on our adversaries
-results in a large risk reduction over unrestricted adversaries.
+DP by assuming that the adversaries who have access to
+private mechanisms are bounded. Like DP, Capacity-bounded DP satisfies two
+extremely useful properties:
+post-processing invariance and composition. Finally, we have
+examples where making the capacity-bounded assumption on our adversaries
+results in a much better privacy guarantee than unrestricted adversaries.
 See [our paper on arxiv](https://arxiv.org/abs/1907.02159) for more information!
+
