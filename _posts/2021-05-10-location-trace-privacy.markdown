@@ -28,7 +28,7 @@ Our first option is to use local differential privacy (LDP), which is basically 
 Our second option is to realize that while most people may be uncomfortable sharing fine-grained location information, they may be okay with coarse-grained data. For example, since I work at UCSD, which is in La Jolla, CA, I may not mind someone knowing that I spend most of my working hours in La Jolla; but I would not want them to know my precise location. This is known as <em>geo-indistinguishability</em>, and is achieved by adding independent noise with a radius $r$ to each location. This improves utility, if we are releasing a single location, but still has challenges with traces. If we average the private locations at 10am and 10:05am, then we get a better estimate since the underlying true locations are highly correlated. 
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2021-05-07-location-priv/plausible_solutions.png" width="80%">
+<img src="/assets/2021-05-10-location-priv/plausible_solutions.png" width="80%">
 {:refdef}
 
 {:refdef: style="text-align: left;"}
@@ -55,7 +55,7 @@ There are a couple of interesting things to note here. First, note that unlike d
 While not as elegant as differential privacy, this definition also has some good properties. We can show that we can get graceful decay of privacy for two trajectories of the same person from different time intervals — which is analogous to what is called parallel composition in the privacy literature. We also show that there is some robustness to side information. Details are in our paper. 
 
 {:refdef: style="text-align: left;"}
-<img src="/assets/2021-05-07-location-priv/three_traces.png" width="100%"> 
+<img src="/assets/2021-05-10-location-priv/three_traces.png" width="100%"> 
 {:refdef}
 {:refdef: style="text-align: left;"}
 <h5>Example of how CIP maintains high uncertainty at secret locations (times). Left: <a href="https://www.nytimes.com/interactive/2018/12/10/business/location-data-privacy-apps.html">a real location trace unknowningly collected from an NYC mayoral staff member by apps on their phone</a>. The red dots indicate sensitive locations. Middle: demonstration of how Geoindistinguishability (adding independent isotropic gaussian noise to each location, as in the red trace) allows for high certainty of true location by correlation. The green envelope shows the posterior uncertainty of a Bayesian adversary with a Gaussian process prior (a <em>GP adversary</em>). Right: demonstration of how a CIP mechanism efficiently thwarts the same adversary's posterior at sensitive locations, given the same utility budget. The mechanism achieves this by both concentrating the noise budget near sensitive locations and by strategically correlating noise added.</h5>
@@ -75,14 +75,14 @@ A more sophisticated mechanism is to add zero-mean Gaussian noise with different
 We provide below a snap-shot of what our results look like. On the x-axis, we are plotting a measure of how correlated our prior is. If the prior is highly correlated, then it is easy to leak privacy for mechanisms that add noise — and hence correlated priors are worse for privacy. On the y-axis, we are plotting the posterior confidence interval size of the adversary — higher means higher privacy. Both mechanisms are calibrated to the same mean-square error, and hence the privacy-utility tradeoff is better if the y-axis is higher. From the figure, we see that our SDP-based mechanism does lead to a better privacy-utility tradeoff, and as expected, privacy offered declines as the correlations grow worse. 
 
 {:refdef: style="text-align: left;"}
-<img src="/assets/2021-05-07-location-priv/experiments.png" width="100%"> 
+<img src="/assets/2021-05-10-location-priv/experiments.png" width="100%"> 
 {:refdef}
 {:refdef: style="text-align: left;"}
 <h5>Our inferentially private mechanism (blue line) maintains higher posterior uncertainty for a Bayesian adversary with a Gaussian process prior (a <em>GP adversary</em>) as compared to two Geoindistinguishability-based baselines (orange and green). The x-axis indicates the degree of correlation anticipated by the GP adversary. The left panel shows the posterior uncertainty for a single basic secret. The middle panel shows uncertainty for a compound secret. The right panel shows posterior uncertainty when we design our mechanism to maintain privacy at every location (all basic secrets). The gray window shows a range of realistic degrees of dependence (correlation) gathered from human mobility data. </h5>
 {:refdef}
 
 {:refdef: style="text-align: left;"}
-<img src="/assets/2021-05-07-location-priv/covariance.png" width="100%"> 
+<img src="/assets/2021-05-10-location-priv/covariance.png" width="100%"> 
 {:refdef}
 {:refdef: style="text-align: left;"}
 <h5>Examples of the noise covariance chosen by our mechanism: Each frame is a covariance matrix optimized by our SDP mechanism to thwart inference at either a single location basic secret or a compound secret of two locations. Noise drawn from a multivariate normal with this covariance is added along the 50 point trace. The two frames on the left show covariance chosen to thwart a GP prior with an RBF kernel. The two frames on the right show covariance chosen to thwart a GP prior with a periodic kernel.</h5>
