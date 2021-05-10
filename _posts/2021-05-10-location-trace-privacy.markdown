@@ -27,9 +27,9 @@ Our first option is to use local differential privacy (LDP), which is basically 
 
 Our second option is to realize that while most people may be uncomfortable sharing fine-grained location information, they may be okay with coarse-grained data. For example, since I work at UCSD, which is in La Jolla, CA, I may not mind someone knowing that I spend most of my working hours in La Jolla; but I would not want them to know my precise location. This is known as <em>geo-indistinguishability</em>, and is achieved by adding independent noise with a radius $r$ to each location. This improves utility, if we are releasing a single location, but still has challenges with traces. If we average the private locations at 10am and 10:05am, then we get a better estimate since the underlying true locations are highly correlated. 
 
-{:refdef: style="text-align: center;"}
+<p style="text-align: center;">
 <img src="/assets/2021-05-10-location-priv/plausible_solutions.png" width="80%">
-{:refdef}
+</p>
 
 {:refdef: style="text-align: left;"}
 <h5>Tradeoffs of three privacy definitions for location data: While DP prevents use of correlation, it does not allow for utility with individual traces. Geoindistinguishability works well for a single location, but cannot prevent an adversary from correlating points close by in time. Our definition (conditional inferential privacy) provides an intermediate: prevent inference against a class of priors while still offering valuable utility.</h5>
