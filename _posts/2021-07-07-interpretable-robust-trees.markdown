@@ -248,7 +248,7 @@ and left subtrees are the same.
 
 We design a new algorithm for learning risk scores by utilizing the known
 boosting method
-\href{https://link.springer.com/content/pdf/10.1023/A:1010852229904.pdf}{boost-by-majority}
+[boost-by-majority](https://link.springer.com/content/pdf/10.1023/A:1010852229904.pdf)
 (BBM). The different conditions are added to the risk score one by one, using
 the weak learner. BBM has the benefit of ensuring the weights in the risk score
 are small integers.  This will lead to an interpretable model with size only
@@ -266,8 +266,7 @@ defiantly correct for the point without the noise. To formally prove it, we
 show that choosing the risk-score conditions in a specific way ensures that they
 are monotone models.
 In such models, adding noise in the way we described is
-sufficient for robustness (more details are in [our
-paper](https://arxiv.org/abs/2102.07048)).
+sufficient for robustness (more details are in [our paper](https://arxiv.org/abs/2102.07048)).
 
 To summarize, we designed a new algorithm that is robust, interpretable, and
 have high-accuracy see the pseudocode below and the formal theorem next.
