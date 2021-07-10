@@ -64,7 +64,7 @@ The number of parameters required to represent a risk score is much smaller than
 their corresponding decision trees, hence they might be considered
 [more interpretable than decision trees](https://jmlr.org/papers/volume20/18-615/18-615.pdf).
 
-<div style="width: 100%; overflow-x: auto; margin-bottom: 40pt">
+<div style="width: 100%; overflow-x: auto; margin-bottom: 35pt">
 <table style="width: 80%; font-size: 80%; margin: auto;" class="concise-table">
   <caption>
 	Two risk score models:
@@ -128,7 +128,7 @@ The table on the left is a risk score with three conditions and the the figure o
 For each node in the tree, the branch towards right represents the path to go if the condition is true.
 The leaves represents the final risk score of the given condition.
 
-<div style="width: 100%; overflow-x: auto;">
+<div style="width: 100%; overflow-x: auto; margin-bottom: 20pt">
   <span style="width: 50%; overflow-x: auto; display: inline-block; margin: auto; float: left;">
     <table style="width: 100%; font-size: 80%; margin: 0;" class="concise-table">
       <tr>
