@@ -7,12 +7,12 @@ categories: jekyll update
 tags: adversarial non-parametric robustness
 paper_url: https://arxiv.org/abs/2102.07048
 code_url: https://github.com/yangarbiter/interpretable-robust-trees
-excerpt: We are constructing a tree-based model that isguaranteedto be adversarially robust, inter-pretable, and accurate.
+excerpt: We are constructing a tree-based model that is guaranteed to be adversarially robust, inter-pretable, and accurate.
 author: <a href='https://sites.google.com/view/michal-moshkovitz'>Michal Moshkovitz</a> and <a href='http://yyyang.me'>Yao-Yuan Yang</a>
 ---
 
 
-**TL;DR** We are constructing a tree-based model that is <inc>guaranteed</inc>
+**TL;DR** We construct a tree-based model that is <inc>guaranteed</inc>
 to be adversarially robust, interpretable, and accurate.
 
 
@@ -25,7 +25,7 @@ What if a car confused a child with a green light? It doesn’t sound so great
 after all.
 
 Machine learning models have to be reliable before we allow them to fully enter
-our lives. Two cornerstones for reliable machine learning are explainability,
+our lives. Two cornerstones for reliable machine learning are interpretability,
 where the model’s decisions are transparent, and robustness, where small changes
 to the input don’t change the model’s answer. Unfortunately, these properties
 are generally studied (i) in isolation or (ii) only empirically.
@@ -35,43 +35,44 @@ interpretability and robustness <ins>simultaneously</ins>, and we examine it
 
 ## What do we mean by interpretability and robustness?
 
-When different people say an "explainable model" or "robust model" they can
+When different people say an "interpretable model" or "robust model" they can
 mean different things. In this section, we explain what we mean by
-explainability and robustness.
+interpretability and robustness.
 
 ### Interpretability
 
-A model is __interpretable__ if the model is simple and self-explainable.
+A model is __interpretable__ if the model is simple and self-interpretable.
 There are several forms of
 [self-explanatory models](https://christophm.github.io/interpretable-ml-book/simple.html),
 e.g., decision sets, logistic regression, and decision rules.
 One of the most fundamental interpretable models, which we focus on here, is
 **small** decision trees.
-In decision trees, each inner node corresponds to a threshold and a
-feature and each leaf correspond to a label.
-The label of an example is the leaf’s label of the corresponding path.
-We focus on binary classifications, where the label can get one of two options.
+For decision trees, each inner node corresponds to a threshold and a
+feature and each leaf corresponds to a label.
+The label of an example is the leaf’s label in the corresponding path.
+We focus on binary classification problems in this post.
 
 In [our paper](https://arxiv.org/abs/2102.07048), we construct a specific
 kind of decision tree ---
-[risk scores](https://jmlr.org/papers/volume20/18-615/18-615.pdf), see Table 1
-and check Table 2 to see how to reduce a risk score to a decision tree.
-A risk score is composed of several conditions (e.g., $age \geq 75$) and each
-matched with a weight, i.e., a small integer.
-A score $s(x)$ of an example $x$ is the weighted sum of all the satisfied
-conditions. The label is then $sign(s(x))$.
+[risk scores](https://jmlr.org/papers/volume20/18-615/18-615.pdf).
+A risk score is composed of several conditions (e.g., $age \geq 75$), and each
+matched with a weight, i.e., an integer.
+A score $s(x)$ of example $x$ is the weighted sum of all the satisfied
+conditions.
+The label is then $sign(s(x))$.
 The number of parameters required to represent a risk score is much smaller than
 their corresponding decision trees, hence they might be considered
 [more interpretable than decision trees](https://jmlr.org/papers/volume20/18-615/18-615.pdf).
+The following table shows an example of a risk score.
 
 <div style="width: 100%; overflow-x: auto; margin-bottom: 35pt">
 <table style="width: 80%; font-size: 80%; margin: auto;" class="concise-table">
   <caption>
-	Two risk score models:
-	<a href='https://jmlr.org/papers/volume20/18-615/18-615.pdf'>LCPA</a> and our new BBM-RS algorithm on the
-	<a href='https://core.ac.uk/download/pdf/55631291.pdf'>bank dataset</a>.
-	Each satisfied condition is multiplied by its weight and summed. Bias term is always satisfied. 
-	If the total score $>0$, the risk model predicts "1" (i.e., the client will open a bank account after a marketing call).
+    Two risk score models:
+    <a href='https://jmlr.org/papers/volume20/18-615/18-615.pdf'>LCPA</a> and our new BBM-RS algorithm on the
+    <a href='https://core.ac.uk/download/pdf/55631291.pdf'>bank dataset</a>.
+    Each satisfied condition is multiplied by its weight and summed. Bias term is always satisfied.
+    If the total score $>0$, the risk model predicts "1" (i.e., the client will open a bank account after a marketing call).
     All features are binary (either $0$ or $1$).
   </caption>
   <tr>
@@ -124,9 +125,9 @@ their corresponding decision trees, hence they might be considered
 </div>
 
 Here is an example of how to convert a risk score to a decision tree.
-The table on the left is a risk score with three conditions and the the figure on the right is the corresponding decision tree.
-For each node in the tree, the branch towards right represents the path to go if the condition is true.
-The leaves represents the final risk score of the given condition.
+The table on the left is a risk score with three conditions and the figure on the right is the corresponding decision tree.
+For each node in the tree, the branch towards the right represents the path to go if the condition is true.
+The leaves represent the final risk score of the given condition.
 
 <div style="width: 100%; overflow-x: auto; margin-bottom: 20pt">
   <span style="width: 50%; overflow-x: auto; display: inline-block; margin: auto; float: left;">
@@ -148,50 +149,48 @@ The leaves represents the final risk score of the given condition.
 </div>
 
 ### Robustness
-We want our model to be robust to adversarial perturbation.
-This means that if an example $x$ is changed, by a bit, to $x'$, the model's
+We also want our model to be robust to adversarial perturbation.
+This means that if example $x$ is changed, by a bit, to $x'$, the model's
 answer remains the same.
-By "a bit", we mean that $x'=x+\delta$ where $\|\delta\|\_\infty\leq r$ is
+By "a bit", we mean that $x'=x+\delta$ where $\\|\delta\\|\_\infty\leq r$ is
 small. A model $h:\mathbf{X} \rightarrow \\{-1, +1\\}$ is <inc>robust</inc> at $x$ with radius
 $r$ if for all $x'$ we have that $h(x)=h(x')$. The notion of <inc>astuteness</inc>
 [was previously introduced](http://proceedings.mlr.press/v80/wang18c.html)
 to jointly measure the robustness and the accuracy of a model.
 The astuteness of a model $h$ at radius $r > 0$ under a distribution $\mu$
-is \\[\Pr_{(x,y)\sim\mu}[\forall x'. \|x-x'\|\_\infty\leq r.\; h(x')=y].\\]
+is \\[\Pr_{(x,y)\sim\mu}[h(x')=y \ |\  \forall x' \text{ with } \\|x-x'\\|\_\infty\leq r].\\]
 
 ## Data properties
 
+We want models that are robust, interpretable, and have accurate.
+Without any assumptions on the data, we cannot guarantee all three to hold simultaneously.
+For example, if the true labels of the examples are different for close
+examples, a model cannot be astute (accurate and robust).
+In this section, we explore which data properties are sufficient for astuteness and interpretability.
+
 ### $r$-Separation
 
-We want models that are robust,  interpretable, and have high-accuracy. Without
-any assumptions on the data we cannot guarantee all three to hold
-simultaneously. For example, if the true labels of the examples are different
-for close examples, a model cannot have high accuracy and be robust. To
-circumvent this problem,
-[a prior work](http://proceedings.mlr.press/v80/wang18c.html) suggested
-to focus on datasets that satisfy $r$-separation.
-
-A binary labeled data is <inc>$r$-separated </inc> if every two differently labeled examples,
-$(x^1,+1)$,$(x^2,-1)$, are far apart,
-$\|x^1-x^2\|\_\infty\geq 2r.$
+[A prior work](http://proceedings.mlr.press/v80/wang18c.html) suggested
+focusing on datasets that satisfy $r$-separation.
+A binary labeled data is <inc>$r$-separated </inc> if every two differently labeled examples, $(x^1,+1)$,$(x^2,-1)$, are far apart,
+$\\|x^1-x^2\\|\_\infty\geq 2r.$
 [Yang et. al.](https://arxiv.org/abs/2003.02460) showed that
-$r$-separation is sufficient for robust learning. We examine whether it is
-also sufficient for interpretability.
-We discovered that the answer is YES and NO.
-YES - because there is a high-accuracy decision tree with size independent
-of the number of examples, and the depth of the tree is linear to the number
-of features and $r$.
-So we can efficiently explain each leaf by going through the path from root
-the that leaf.
-NO - because the size of the tree can be exponential in the number of
-features.
-We showed some $r$-separated data and proved that the tree-size must be
-exponential in $d$ to achieve accuracy better than random.
+$r$-separation is sufficient for robust learning.
+Therefore, we examine whether it is also sufficient for accuracy and
+interpretability.
+We have two main findings.
+First, we found that there is a accurate decision tree with size
+independent of the number of examples.
+Second, we discovered that the size of the accurate tree can be exponential
+in the number of features.
+Combining these two findings, it appears that $r$-separation is too weak of an
+assumption for the trees to have guarantees on both accuracy and
+interpretability when there are many features.
 
 ### Linear separation
 
 Next, we investigate a stronger assumption --- linear separation with a
-$\gamma$-margin, where there exists a vector $w$ with $\|w\|\_1=1$ such that
+$\gamma$-margin, where there exists a vector $w$ with $\\|w\\|\_1=1$ such that
 $ywx\geq \gamma.$ Linear separation is a popular assumption in the research of
 machine learning models, e.g., for
 [support vector machines](https://en.wikipedia.org/wiki/Support-vector_machine),
@@ -200,15 +199,26 @@ and [decision trees](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.1
 
 
 Using a generalization of
-[previous work](https://www.cs.huji.ac.il/~shais/papers/ShalevSi08.pdf)
+[previous work](https://www.cs.huji.ac.il/~shais/papers/ShalevSi08.pdf),
 we know that under the linear separation assumption, there has to be a feature
-that gives nontrivial information. Or in different words, decision stumps are a
-weak learner.
-More formally, for each sample $S=((x^1,y^1),\ldots,(x^m,y^m))$, we focus on
-the best decision stump for this sample $h_S(x)=sign(x_i-\theta)$ where $i$ is
-a  feature  and  $\theta$ is a threshold that minimize the training error
-$\sum_{j=1}^m sign(x^j_i\geq\theta) y^j.$ We are able to prove that $h_S$ has
-accuracy better than $0.5$, i.e., better than a random guess:
+that gives nontrivial information.
+To formalize it, we use the notion of
+[decision stumps](https://en.wikipedia.org/wiki/Decision_stump) and
+[weak learners](https://en.wikipedia.org/wiki/Boosting_(machine_learning)).
+A decision stump is a (simple) hypothesis of the form $sign(x_i-\theta)$ defined
+by a feature $i$ and a threshold $\theta$.
+A hypothesis class is a $\gamma$-weak learner, if one can learn it with accuracy
+$\gamma$ (slightly) better than random, i.e., if there is always a
+hypothesis in the class with accuracy of at least $1/2+\gamma$.
+
+Now, we look at the hypothesis class of all possible decision stumps and we want
+to show that this class is a weak learner.
+For each dataset $S=((x^1,y^1),\ldots,(x^m,y^m))$, we assume
+the best decision stump for this dataset is $h_S(x)=sign(x_i-\theta)$, where $i$
+is a feature and $\theta$ is a threshold that minimizes the training error
+$\sum_{j=1}^m sign(x^j_i\geq\theta) y^j.$
+We can show that $h_S$ has accuracy better than $0.5$, i.e., better than a
+random guess:
 
 <div class="theorem">
   Fix $\alpha>0$.
@@ -219,29 +229,31 @@ accuracy better than $0.5$, i.e., better than a random guess:
   $$\Pr_{(x,y)\sim\mu}(h_S(x)=y)\geq \frac12+\frac{\gamma}{4}-\alpha.$$
 </div>
 
-We showed that decision stumps are a weak learner under the linear separability
-assumption.
-So why not use a boosting method to learn the entire interpretable decision
-tree? Kearns and Mansour showed that if at each node we have a weak learner then
-the famous algorithm for learning decision tree,
-[ID3](https://link.springer.com/content/pdf/10.1007/BF00116251.pdf), works.
+This result shows us there exists a classifier $h_S$ in the hypothesis class of
+all possible decision stumps that produces a non-trivial
+solution under the linear separability assumption.
+Using this theorem along with the result from
+[Kearns and Mansour](https://www.sciencedirect.com/science/article/pii/S0022000097915439),
+we can show that
+[CART](https://onlinelibrary.wiley.com/doi/full/10.1002/widm.8?casa_token=O2ehHd8cYlwAAAAA%3AplOtiUnZ41vnEXcvBTZiQxwPJfl1DTFB4ROZX8fX7VP0uXhyxJoqXmRKAIdUyaXRHe7EP1Y860w38A)-type
+algorithms can deliver a **small** tree with high accuracy.
 As a side benefit, this is the <inc>first</inc> time that a distributional
 assumption that does not include feature independence is used.
 [Previously](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.129.6343&rep=rep1&type=pdf),
 [many](https://arxiv.org/abs/1911.07375)
 [papers](http://proceedings.mlr.press/v125/brutzkus20a/brutzkus20a.pdf)
-assumed uniformity or feature independence.
+assumed either uniformity or feature independence.
 
 Are we done? Is this model also robust?
 
 ## New algorithm: BBM-RS
 
 Designing robust decision trees is inherently a difficult task.
-The reason is that, generally, the model defined by the right and left subtrees
+One reason is that, generally, the model defined by the right and left subtrees
 can be completely different. The feature $i$ in the root determines if the model
 uses the right or left subtrees.
 Thus, a small change in the $i$-th feature completely changes the model.
-To overcome this difficulty we focus on a specific type of decision trees, risk
+To overcome this difficulty we focus on a specific class of decision trees, risk
 scores, which were mentioned at the beginning of the post.
 **Note that** in the decision tree that corresponds to the risk score, the right
 and left subtrees are the same.
@@ -269,7 +281,7 @@ In such models, adding noise in the way we described is
 sufficient for robustness (more details are in [our paper](https://arxiv.org/abs/2102.07048)).
 
 To summarize, we designed a new algorithm that is robust, interpretable, and
-have high-accuracy see the pseudocode below and the formal theorem next.
+has high accuracy see the pseudocode below and the formal theorem next.
 
 <div class="theorem">
 Suppose data is $\gamma$-linearly separable and fix $\epsilon,\delta\in(0,1)$.
@@ -280,19 +292,26 @@ feature-threshold pairs.
 </div>
 
 ### Performance on real data
-Previously, we showed that BBM-RS is robust and interpretable on linearly
-separable data.
-Now, let's see how it performs on real datasets, which may not be perfectly
-linearly separable (here we present the result for four datasets, for other
-datasets, please refer to [our paper](https://arxiv.org/abs/2102.07048)).
 
-First, we look at how  non-linearly separable these real datasets are.
-We measure the linear separateness by training a linear SVM with different
-regularization parameters and record the best accuracy. From the next table, we
-see that there are datasets that are
-very or moderately close to being perfectly linearly separated.
-This shows that the assumption of our theorem may still be useful
-for many datasets.
+For BBM-RS, our theorem is restricted to linearly separable data.
+However, real datasets may not perfectly linearly separable.
+A straightforward question is: is linear separability a reasonable
+assumption in practice?
+
+To answer this question, we consider $13$ real datasets (here we present the
+results for four datasets, for more datasets, please refer to [our
+paper](https://arxiv.org/abs/2102.07048)).
+We measure how linearly separable each of these datasets is.
+To measure the linear separateness, which is one minus the minimal fraction of
+points that needed to be removed for the data to be linearly separable, we
+train linear SVMs with different regularization parameters and record the best
+accuracy.
+The higher the accuracy is, the more linearly separable the data is.
+The following table shows the results and it reveals that most datasets
+are very or moderately close to being linearly separated.
+This indicates that the linear assumption in our theorem may not be too
+restrictive in practice.
+
 
 <div style="width: 100%; overflow-x: auto;">
 <table style="width: 50%; font-size: 80%; margin: auto" class="concise-table">
@@ -314,7 +333,11 @@ for many datasets.
 </table>
 </div>
 
-To see the performance of BBM-RS, we compare it to three baselines,
+Even though these datasets are not perfectly linearly separable, BBM-RS can
+still be applied (just that the theorem would not always hold).
+We are interested to see how BBM-RS performed against others on these
+non-perfect datasets.
+We compare BBM-RS to three baselines,
 [LCPA](https://arxiv.org/abs/1610.00168),
 [decision tree (DT)](https://books.google.co.il/books?hl=en&lr=&id=MGlQDwAAQBAJ&oi=fnd&pg=PP1&ots=gBmdjTJVdK&sig=\_jUBiPW4cTS7JYUKpzKcJLYipl4&redir_esc=y#v=onepage&q&f=false), and
 [robust decision tree (RobDT)](http://proceedings.mlr.press/v97/chen19m/chen19m.pdf).
@@ -325,20 +348,10 @@ distance to the closest adversarial example.
 The larger ER is, the more robust the classifier is.
 We measure a model's interpretability by evaluating its
 __Interpretation Complexity (IC)__.
-We measure IC with the number of unique feature-thresholds pairs in the
+We measure IC with the number of unique feature-threshold pairs in the
 model (this corresponds to the number of conditions in the risk score).
 The smaller IC is, the more interpretable the classifier is.
-
-From the tables, we see that BBM-RS have a test accuracy comparable to other
-methods.
-In terms of robustness, it performs slightly better than others (performing the
-best on three datasets among a total of four).
-In terms of interpretability, BBM-RS
-performs the best among three out of four datasets.
-All in all, we see that BBM-RS can bring better robustness and interpretability
-(depending on the measurement) while perform competitively on test accuracy.
-This shows that BBM-RS not only performs well theoretically, it also performs
-well empirically.
+The following tables show the experimental results.
 
 <div style="width: 100%; overflow-x: auto;">
 <table style="width: 60%; font-size: 80%; margin: auto" class="concise-table">
@@ -472,9 +485,20 @@ well empirically.
 </table>
 </div>
 
+From the tables, we see that BBM-RS has a test accuracy comparable to other
+methods.
+In terms of robustness, it performs slightly better than others (performing the
+best on three datasets among a total of four).
+In terms of interpretability, BBM-RS
+performs the best among three out of four datasets.
+All in all, we see that BBM-RS can bring better robustness and interpretability
+while performing competitively on test accuracy.
+This shows that BBM-RS not only performs well theoretically, it also performs
+well empirically.
+
 ## Conclusion
 
-In conclusion, we investigated three important properties of a classifier,
+In conclusion, we investigated three important properties of a classifier:
 accuracy, robustness, and interpretability. We designed and analyzed an
 <ins>efficient</ins> tree-based algorithm that provably achieves all these
 properties, under linear separation with a margin assumption. Our research is a
