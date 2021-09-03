@@ -1,0 +1,105 @@
+---
+layout: post
+mathjax: true
+title:  "How to Actively Learn in Bounded Memory"
+date:   2021-09-01 10:00:00 -0700
+categories: jekyll update
+tags: PAC-Learning, Active Learning, Bounded Memory
+author: <a href='http://cseweb.ucsd.edu/~nmhopkin/'>Max Hopkins</a>
+excerpt: Machine learning practice is dominated by massive supervised algorithms, but gathering sufficient data for these methods can often prove intractable. Active learning is an adaptive technique for annotating large datasets in exponentially fewer queries by finding the most informative examples. Prior works on (worst-case) active learning often require holding the entire dataset in memory, but this can also prove difficult for the desired use-case of big data! In this post, we cover recent work towards characterizing bounded memory active learning, opening the door to applications in settings (e.g. learning on mobile devices) where one can't necessarily hope to store all of your data at once.
+
+---
+### A Brief Introduction: Enriched Queries and Memory Constraints
+In the world of big-data, machine learning practice is dominated by massive supervised algorithms, techniques that require huge troves of labeled data to reach state of the art accuracy. While certainly successful in their own right, these methods [break down in important scenarios like disease classification](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7104701/) where labeling is expensive, and accuracy can be the difference between life and death. [In a previous post](https://ucsdml.github.io/jekyll/update/2020/07/27/rel-comp.html), we discussed a new technique for tackling these high risk scenarios using *enriched queries*: informative questions beyond labels (e.g. *comparing* data points). While the resulting algorithms use very few labeled data points and never make errors, their efficiency comes at a cost: **memory usage**.
+
+For simplicity, in this post we'll consider the following basic setup: given an unlabeled dataset $X$ of size $n$ (labeled by some hidden underlying classifier), and access to a set of oracles which we can query for information about $X$ (say the *label* of any $x \in X$, or a *comparison* between $x,x' \in X$), we'd like to correctly identify the label of every point in $X$ in as few queries as possible. [Traditional techniques](https://arxiv.org/abs/1704.03564) for solving this problem aim to use only $\log(n)$ adaptive queries (think binary search)---this gives an exponential improvement over the naive algorithm which simply requests the label of every point! However, these strategies generally have a problem: in order to choose the most informative queries, they allow the algorithm access to all of $X$, implicitly assuming the entire dataset is stored in memory. Since we frequently deal with massive datasets in practice, this strategy quickly becomes intractable. In this post, we'll discuss a new compression-based characterization of when its possible to learn in $\log(n)$ queries, but store only a **constant** number of points.
+
+### A Basic Example: Learning Thresholds via Compression
+Learning in constant memory may seem a tall order when the algorithm is already required to correctly recover every label in a size $n$ set $X$ in only $\log(n)$ queries. To convince the reader such a feat is even possible, let's start with a fundamental example using only label queries: thresholds in 1D. Let $X$ be any set of $n$ points on $\mathbb{R}$ with (hidden) labels given by some threshold. We'd like to learn the label of every point in $X$ in around $\log(n)$ adaptive queries of the form "what is the label of $x \in X$?" Classically, we'd solve this problem by binary search. This uses only $\log(n)$ labels, but determining each query requires holding $X$ in memory! The seminal active learning algorithm of [Kane, Lovett, Moran, and Zhang](https://arxiv.org/abs/1704.03564) (KLMZ) does a little bit better. They follow a simple four step process:
+
+1. Randomly sample $O(1)$ points from remaining set (initially $X$ itself)
+2. Query the labels of these points, and store them in memory
+3. Restrict to the set of points whose labels remain unknown
+4. Repeat $O(\log(n))$ times.
+
+Note that it is possible to remove points we have not queried in Step 3 (we call such points "inferred," see Figure 1(c)). Indeed, KLMZ prove that despite only making $O(1)$ queries, each round removes about half of the remaining points. As a result, the algorithm learns all of $X$ with reasonable probability (see [our previous post](https://ucsdml.github.io/jekyll/update/2020/07/27/rel-comp.html) for more details), and clearly only stores $O(\log(n))$ points overall. This is much better, but still not good enough---we'd like an algorithm whose memory doesn't scale with $n$ at all!
+
+It turns out that for thresholds, this can be achieved by a very simple tactic: in each round, only store the two points closest to each side of the threshold. This "compressed" version of the sample actually retains all relevant information, so the algorithm's learning guarantees are completely unaffected. Let's take a look pictorially.
+
+{:refdef: style="text-align: center;"}
+<img src="/assets/2021-09-03-al-memory/threshold.png" width="90%">
+{:refdef}
+
+Since we can compress our storage down to a constant size in every round and never draw more than $O(1)$ points, this strategy results in a learner whose memory has no dependence on $X$ at all: a zero-error, query efficient, bounded memory learner.
+
+
+### A General Framework: Lossless Sample Compression
+Our example for thresholds in 1D suggests the following paradigm: if we can compress samples down to $O(1)$ points without harming inference, bounded memory learning is possible. This is true, but not particularly useful: most classes beyond thresholds can't even be actively learned (e.g. [halfspaces in $2D$](https://cseweb.ucsd.edu/~dasgupta/papers/greedy.pdf)), much less in bounded memory. To build learners for classes beyond thresholds, we'll need to generalize our idea of compression to the *enriched query* regime. In more detail, let $X$ be a set and $H$ a family of binary labelings of $X$. We consider classes $(X,H)$ with an additional query set "$Q$." Formally, $Q$ consists of a set of oracles that contain information about the set $X$ based upon the structure of the underlying hypothesis $h \in H$. Our formal definition of these oracles is fairly broad (see [our paper](https://arxiv.org/abs/2102.05047) for exact details), but they can be thought of simply as functions dependent on the underlying hypothesis $h \in H$ that give additional structural information about tuples in $X$. One standard example is the *comparison oracle* on halfspaces. Given a particular halfspace $\langle \cdot, v \rangle$, the learner may send a pair $x,x'$ to the comparison oracle to learn which example is closer to the decision boundary (equivalently, they recieve $\text{sign}(\langle x, v \rangle - \langle x', v \rangle)$).
+
+To generalize our compression-based strategy for thresholds to the enriched query setting, we also need to discuss a little bit of background on the theory of inference. Let $(X,H)$ be a hypothesis class with associated query set $Q$. Given a sample $S \subset X$ and query response $Q(S)$, denote by $H_{Q(S)}$ the set of hypotheses consistent with $Q(S)$. We say that $Q(S)$ *infers* some $x \in X$ if all consistent classifiers label $x$ the same:
+\\[
+\exists z \text{ s.t. } \forall h \in H_{Q(S)}, h(x)=z.
+\\]
+In other words, given this condition, we can label $x$ with 100% certainty. In the case of thresholds, our compression strategy relied on the fact that the two points closest to the boundary inferred the same amount of information as the original sample. We can extend this idea naturally to the enriched query regime as well.
+
+<div class="definition">
+Let $X$ be a set and $H$ a family of binary classifiers on $X$. We say $(X,H)$ has a lossless compression scheme (LCS) $W$ of size $k$ with respect to a set of enriched queries $Q$ if for all subsets $S \subset X$ and all query responses $Q(S)$, there exists a subset $W = W(Q(S)) \subseteq S$ such that $|W| \leq k$, and any point in $X$ whose label is inferred by $Q(S)$ is also inferred by $Q(W)$.
+</div>
+
+Recall our goal is to correctly label every point in $X$. Using lossless compression, we can now state our general algorithm for this process:
+
+1. Randomly sample $O(1)$ points from remaining set (initially $X$ itself)
+2. Make all queries on these points, and store them in memory
+3. Compress memory via the lossless compression scheme
+4. Restrict to the set of points whose labels remain unknown
+5. Repeat $O(\log(n))$ times.
+
+In recent work with [Daniel Kane](https://cseweb.ucsd.edu/~dakane/), [Shachar Lovett](https://cseweb.ucsd.edu/~slovett/home.html), and [Michal Moshkovitz](https://sites.google.com/view/michal-moshkovitz), we prove that this basic algorithm achieves zero-error, query optimal, bounded memory learning.
+<div class="theorem">
+If $(X,H)$ has a size-$k$ LCS with respect to $Q$, then the above algorithm correctly labels all points in $X$ in
+</div>
+
+\\[
+O_k(\log(n)) \text{ queries}
+\\]
+and 
+\\[
+    O_k(1) \text{ memory}.
+\\]
+
+Before moving on to some examples, let's take a brief moment to discuss the proof. The result essentially follows in two steps. First, we'd like to show that for any distribution over $X$, drawing $O(k)$ points is sufficient to infer $1/2$ of $X$ in expectation. This follows similarly to standard results in the literature---one can either use the classic sample compression arguments of [Floyd and Warmuth](https://link.springer.com/content/pdf/10.1023/A:1022660318680.pdf), or more recent symmetry arguments of KLMZ. With this in hand, it's easy to see that after $\log(n)$ rounds (learning $1/2$ of $X$ each round), we'll have learned all of $X$. The second step is then to observe that our compression in each step has no effect on this learning procedure. This follows without too much difficulty from the definition of lossless sample compression, which promises that the compressed sub-sample preserves all such information.
+
+### Example: Axis-Aligned Rectangles
+While interesting in its own right, a sufficient condition like Lossless Sample Compression is most useful if it applies to natural classifiers. We'll finish our post by discussing an application of this paradigm to axis-aligned rectangles, a fundamental family which would normally take $\Omega(n)$ queries to learn.
+
+Axis-aligned Rectangles are a natural generalization of intervals to higher dimensions. They are given by a *product* of $d$ intervals in $\mathbb{R}$: 
+\\[
+R = \prod\limits_{i=1}^d [a_i,b_i],
+\\]
+such that an example $x=(x_1,\ldots,x_d) \in \mathbb{R}^d$ lies in the rectangle if every feature lies inside the specified interval, that is $x_i \in [a_i,b_i]$. 
+
+{:refdef: style="text-align: center;"}
+<img src="/assets/2021-09-03-al-memory/rectangle.png" width="40%">
+{:refdef}
+
+Standard arguments show that with only labels, learning a size $n$ set $X$ labeled by a hidden rectangle takes $\Omega(n)$ queries. To circumvent this issue, we introduce the **"odd-one-out" oracle** $\mathcal{O}_{\text{odd}}$ which, on input $x\in\mathbb{R}^d$ lying outside of $R$, returns a violated coordinate (i.e. a feature lying outside one of the specified intervals), and whether the coordinate was too large or too small. Concretely, imagine a chef is trying to cook a dish for a particularly picky patron. After each failed attempt, the chef asks the patron what went wrong, and the patron responds with some feature they dislike (perhaps the meat was overcooked, or undersalted). It turns out that such scenarios have small lossless compression schemes (and are therefore learnable in bounded memory).
+<div class="theorem">
+        Axis-Aligned Rectangles over $\mathbb{R}^d$ have an $O(d)$-size LCS with respect to $\mathcal{O}_{odd}$.
+</div>
+We'll wrap up our post by sketching the proof. We'll break our compression scheme into two parts: a scheme for points inside the rectangle, and a scheme points outside the rectangle. 
+
+Let's start with the former case. Here the relevant information is the maximum and minimum values of coordinates in our sample. Storing the $2d$ points achieving these values can be viewed as storing a **bounding box** that is guaranteed to lie inside the classifying rectangle.
+
+{:refdef: style="text-align: center;"}
+<img src="/assets/2021-09-03-al-memory/inside.png" width="90%">
+{:refdef}
+
+Any point outside the bounding box has rectangles consistent with the original sample that label it differently. This means that any point outside the box cannot be learned by the original sample, and since every point inside the box is inferred by the bounding box, these $2d$ points give a compression scheme for the sample.
+
+Now let's consider the latter, where we have to compress information from our additional odd-one-out oracle. We claim that a simple strategy suffices in this case: store the closest point to each edge of the rectangle. 
+
+{:refdef: style="text-align: center;"}
+<img src="/assets/2021-09-03-al-memory/outside.png" width="90%">
+{:refdef}
+
+In particular, because the odd-one-out oracle gives a violated coordinate and direction of violation, any point that is *further out* in the direction of violation must also lie outside the rectangle. In any given direction, it is not hard to see that all relevant information is captured by the closest point to the relevant edge, since any further point can be inferred to be too far in that direction.
