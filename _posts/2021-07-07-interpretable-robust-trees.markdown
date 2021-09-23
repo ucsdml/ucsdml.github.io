@@ -7,26 +7,13 @@ categories: jekyll update
 tags: adversarial non-parametric robustness
 paper_url: https://arxiv.org/abs/2102.07048
 code_url: https://github.com/yangarbiter/interpretable-robust-trees
-excerpt: We are constructing a tree-based model that is guaranteed to be adversarially robust, inter-pretable, and accurate.
+excerpt: The reliability of machine learning models has become more important. In this post, we explore the interaction between three different aspects, (1) interpretability, (2) robustness, and (3) accuracy, of machine learning models. We also construct a tree-based model that is guaranteed to be adversarially robust, interpretable, and accurate on linearly separable data.
 author: <a href='https://sites.google.com/view/michal-moshkovitz'>Michal Moshkovitz</a> and <a href='http://yyyang.me'>Yao-Yuan Yang</a>
 ---
 
 
 **TL;DR** We construct a tree-based model that is <inc>guaranteed</inc>
 to be adversarially robust, interpretable, and accurate.
-
-<!--
-Imagine a world where computers are fully integrated into our everyday lives and are
-making decisions independently without human intervention.
-There will be no need to worry about overly exhausted doctors making life-changing decisions
-for you or tired drivers driving you home.
-Sounds great, right?
-Well, what if those computers weren’t reliable? What if a
-computer decided you need to go through surgery without telling you why?
-What if a car confused a child with a green light?
-It doesn’t sound so great after all.
-
-Before we fully embrace machine learning, it needs to be reliable.-->
 
 Imagine a world where computers are fully integrated into
 our everyday lives. Making decisions independently, without
@@ -38,7 +25,7 @@ computer decided you need to go through surgery without
 telling you why? What if a car confused a child with a
 green light? It doesn’t sound so great after all.
 
-For these reason, the reliability of these machines is essential.
+Before we fully embrace machine learning, it needs to be reliable.
 The cornerstones for reliable machine learning are (i) interpretability,
 where the model’s decisions are transparent, and (ii) robustness, where small changes
 to the input do not change the model’s prediction.
@@ -50,16 +37,15 @@ In this post, our objective is to build a decision tree with guarantees
 on its accuracy, robustness, and interpretability.
 We start by explaining what we mean by interpretability and robustness.
 Next, to derive guarantees, we need some assumptions on the data.
-We start with the known [$r$-separated data](http://proceedings.mlr.press/v80/wang18c.html)
-and show that there exists a tree that is accurate and robust,
-independent of the sample size.
-However, such tree can be exponentially large, which makes it not interpretable.
-To improve on the guarantee, we make a stronger assumption on the data
+We start with the known [$r$-separated data](http://proceedings.mlr.press/v80/wang18c.html).
+We show that although there exists a tree that is accurate and robust,
+such tree can be exponentially large, which makes it not interpretable.
+To improve the guarantees, we make a stronger assumption on the data
 and focus on linearly separable data.
 We design an algorithm called BBM-RS and prove that it is accurate, robust, and interpretable on
 linearly separable data.
-Lastly, real datasets may not be linearly separable, so to understand how BBM-RS performs in practice, we conducted an
-empirical study on $13$ datasets.
+Lastly, real datasets may not be linearly separable, so to understand how BBM-RS performs in practice,
+we conduct an empirical study on $13$ datasets.
 We find out that BBM-RS brings better robustness and interpretability while performing competitively
 on test accuracy.
 
@@ -67,7 +53,7 @@ on test accuracy.
 
 ### Interpretability
 
-A model is __interpretable__ if the model is simple and self-interpretable.
+A model is __interpretable__ if the model is simple and self-explanatory.
 There are several forms of
 [self-explanatory models](https://christophm.github.io/interpretable-ml-book/simple.html),
 e.g., [decision sets](https://www-cs-faculty.stanford.edu/people/jure/pubs/interpretable-kdd16.pdf),
@@ -83,7 +69,7 @@ This means that if example $x$ is changed, by a bit, to $x'$, the model's
 answer remains the same.
 By "a bit", we mean that $x'=x+\delta$ where $\\|\delta\\|\_\infty\leq r$ is
 small. A model $h:\mathbf{X} \rightarrow \\{-1, +1\\}$ is <inc>robust</inc> at $x$ with radius
-$r$ if for all $x'$ we have that $h(x)=h(x')$. The notion of <inc>astuteness</inc>
+$r$ if for all such $x'$ we have that $h(x)=h(x')$. The notion of <inc>astuteness</inc>
 [was previously introduced](http://proceedings.mlr.press/v80/wang18c.html)
 to jointly measure the robustness and the accuracy of a model.
 The astuteness of a model $h$ at radius $r > 0$ under a distribution $\mu$
@@ -104,7 +90,7 @@ In this section, we explore which data properties are sufficient for astuteness 
 focusing on datasets that satisfy $r$-separation.
 A binary labeled data distribution is <inc>$r$-separated </inc> if every two differently labeled examples, $(x^1,+1)$,$(x^2,-1)$, are far apart,
 $\\|x^1-x^2\\|\_\infty\geq 2r.$
-[Yang et. al.](https://arxiv.org/abs/2003.02460) showed that
+[Yang et al.](https://arxiv.org/abs/2003.02460) showed that
 $r$-separation is sufficient for robust learning.
 Therefore, we examine whether it is also sufficient for accuracy and
 interpretability.
@@ -113,9 +99,8 @@ First, we found that there is a accurate decision tree with size
 independent of the number of examples.
 Second, we discovered that the size of the accurate tree can be exponential
 in the number of features.
-Combining these two findings, it appears that $r$-separation is too weak of an
-assumption for the trees to have guarantees on both accuracy and
-interpretability when there are many features.
+Combining these two findings, it appears we need to find a stronger assumption on the data to
+be able to have guarantees on both accuracy and interpretability.
 
 ### Linear separation
 
@@ -151,7 +136,7 @@ to show that this class is a weak learner.
 For each dataset $S=((x^1,y^1),\ldots,(x^m,y^m))$, we assume
 the best decision stump for this dataset is $h_S(x)=sign(x_i-\theta)$, where $i$
 is a feature and $\theta$ is a threshold that minimizes the training error
-$\sum_{j=1}^m sign(x^j_i\geq\theta) y^j.$
+$\sum_{j=1}^m sign(x^j_i < \theta) y^j.$
 We can show that $h_S$ has accuracy better than $0.5$, i.e., better than a
 random guess:
 
@@ -164,7 +149,7 @@ random guess:
   $$\Pr_{(x,y)\sim\mu}(h_S(x)=y)\geq \frac12+\frac{\gamma}{4}-\alpha.$$
 </div>
 
-This result shows us there exists a classifier $h_S$ in the hypothesis class of
+This result proves that there exists a classifier $h_S$ in the hypothesis class of
 all possible decision stumps that produces a non-trivial
 solution under the linear separability assumption.
 Using this theorem along with the result from
@@ -184,13 +169,12 @@ Are we done? Is this model also robust?
 ## New algorithm: BBM-RS
 
 Designing robust decision trees is inherently a difficult task.
-One reason is that, generally, the model defined by the right and left subtrees
+One reason is that, generally, the models defined by the right and left subtrees
 can be completely different.
 The feature $i$ in the root determines if the model
-uses the right or left subtrees.
+uses the right or left subtree.
 Thus, a small change in the $i$-th feature completely changes the model.
-To overcome this difficulty, we focus on a specific class of decision trees, risk
-scores.
+To overcome this difficulty, we focus on a specific class of decision trees.
 <!--**Note that** in the decision tree that corresponds to the risk score, the right
 and left subtrees are the same.-->
 
@@ -209,12 +193,7 @@ is matched with a weight, i.e., an integer.
 A score $s(x)$ of example $x$ is the weighted sum of all the satisfied
 conditions.
 The label is then $sign(s(x))$.
-Risk score can be viewed as a decision tree with the same feature-threshold pair at
-each level.
-The number of parameters required to represent a risk score is usually much smaller
-than decision trees trained on the same data, hence they are considered
-[more interpretable than decision trees](https://jmlr.org/papers/volume20/18-615/18-615.pdf).
-The following table shows an example of a risk score.
+
 
 <div style="width: 100%; overflow-x: auto; margin-bottom: 35pt">
 <table style="width: 90%; font-size: 80%; margin: auto;" class="concise-table">
@@ -247,71 +226,22 @@ The following table shows an example of a risk score.
    <th>Previous call was successful</th> <th style="text-align: center;">2</th> <th> + ... </th>
   </tr>
   <tr>
-   <th>Consumer price index $\geq 93.5$</th> <th style="text-align: center;">-</th> <th> + ... </th>
-  </tr>
-  <tr>
    <th></th> <th>total scores=</th> <th> </th>
   </tr>
-  <!--
-  <tr>
-    <th colspan="1"></th>
-    <th colspan="1" style="text-align: center;">LCPA</th>
-    <th colspan="1" style="text-align: center;">BBM-RS</th>
-    <th colspan="1"></th>
-  </tr>
-  <tr>
-    <th colspan="1">features</th>
-    <th colspan="3" style="text-align: center;">weights</th>
-  </tr>
-  <tr>
-    <th colspan="1"></th>
-    <th colspan="1" style="text-align: center;">LCPA</th>
-    <th colspan="1" style="text-align: center;">BBM-RS</th>
-    <th colspan="1"></th>
-  </tr>
-  <tr>
-   <th>Bias term</th> <th style="text-align: center;">-1</th> <th style="text-align: center;">-5</th> <th> + ... </th>
-  </tr>
-  <tr>
-   <th>Age $\geq 75$</th> <th style="text-align: center;">-</th> <th style="text-align: center;">2</th> <th> + ... </th>
-  </tr>
-  <tr>
-   <th>Called in Q1</th> <th style="text-align: center;">1</th> <th style="text-align: center;">2</th> <th> + ... </th>
-  </tr>
-  <tr>
-   <th>Called in Q2</th> <th style="text-align: center;">-1</th> <th style="text-align: center;">-</th> <th> + ... </th>
-  </tr>
-  <tr>
-   <th>Called before</th> <th style="text-align: center;">1</th> <th style="text-align: center;">4</th> <th> + ... </th>
-  </tr>
-  <tr>
-   <th>Previous call was successful</th> <th style="text-align: center;">1</th> <th style="text-align: center;">2</th> <th> + ... </th>
-  </tr>
-  <tr>
-   <th>Consumer price index $\geq 93.5$</th> <th style="text-align: center;">1</th> <th style="text-align: center;">-</th> <th> + ... </th>
-  </tr>
-  <tr>
-   <th>Employment variation rate $<-1$</th> <th style="text-align: center;">5</th> <th style="text-align: center;">4</th> <th> + ... </th>
-  </tr>
-  <tr>
-   <th>3 month euribor rate $\geq 200$</th> <th style="text-align: center;">-2</th> <th style="text-align: center;">-</th> <th> + ... </th>
-  </tr>
-  <tr>
-   <th>3 month euribor rate $\geq 400$</th> <th style="text-align: center;">5</th> <th style="text-align: center;">-</th> <th> + ... </th>
-  </tr>
-  <tr>
-   <th>3 month euribor rate $\geq 400$</th> <th style="text-align: center;">2</th> <th style="text-align: center;">-</th> <th> + ... </th>
-  </tr>
-  <tr>
-   <th></th> <th> </th> <th>total scores=</th> <th> </th>
-  </tr>
-  -->
 </table>
 </div>
 
+A risk score can be viewed as a decision tree with the same feature-threshold pair at
+each level (see example below).
+A risk score is equivalently a
+[catepillar tree](https://en.wikipedia.org/wiki/Caterpillar_tree), which has a simpler structure,
+and generally has fewer number of *unique* nodes.
+Hence, they are considered
+[more interpretable than decision trees](https://jmlr.org/papers/volume20/18-615/18-615.pdf).
+The following table shows an example of a risk score.
 
 <div style="width: 100%; overflow-x: auto; margin-bottom: 20pt">
-  <table style="width: 100%; font-size: 80%; margin-bottom: 1pt;" class="concise-table">
+  <table style="width: 100%; font-size: 80%; margin-bottom: 2pt;" class="concise-table">
   <caption>
     Here is an example of how to convert a risk score into a decision tree.
     The table on the left is an example of a risk score that may be used by a doctor to determine
@@ -332,8 +262,8 @@ The following table shows an example of a risk score.
       </tr>
       <tr><th>Bias term</th> <th style="text-align: center;">-3</th> <th> + ... </th></tr>
       <tr><th>Fever</th> <th style="text-align: center;">3</th> <th> + ... </th></tr>
-      <tr><th>Sneezes</th> <th style="text-align: center;">1</th> <th> + ... </th></tr>
-      <tr><th>Coughs</th> <th style="text-align: center;">2</th> <th> + ... </th></tr>
+      <tr><th>Sneeze</th> <th style="text-align: center;">1</th> <th> + ... </th></tr>
+      <tr><th>Cough</th> <th style="text-align: center;">2</th> <th> + ... </th></tr>
       <tr><th></th> <th>total scores=</th> <th></th></tr>
     </table>
   </span>
@@ -363,7 +293,7 @@ bit closer to the decision boundary, see the figure below.
 {:refdef: style="text-align: center;"}
   <img src='/assets/2021-07-07-interpretable-robust-trees/BBM_RS_add_noise.png'>
 {:refdef}
-The idea is that if the model is correct for the noisy point, then it's
+The idea is that if the model is correct for the noisy point, then it
 should be correct for the point without the noise.
 To formally prove it, we show that choosing the risk-score conditions in a specific 
 way ensures that they are monotone models.
@@ -376,7 +306,7 @@ In this case, the number of steps BBM-RS will take is also constant.
 In each step, we run the weak learner and find the best $(i,\theta)$.
 So the overall time is linear in the input size and the time to run the weak learner.
 
-To summarize, we designed a new algorithm, BBM-RS, that is robust, interpretable, and
+To summarize, we designed a new efficient algorithm, BBM-RS, that is robust, interpretable, and
 has high accuracy. The following theorem shows this. Please refer to
 [our paper](https://arxiv.org/abs/2102.07048) for the pseudocode of BBM-RS
 and more details for the theorem.
@@ -439,9 +369,9 @@ restrictive in practice.
 </div>
 
 Even though these datasets are not perfectly linearly separable, BBM-RS can
-still be applied (bet the theorem may not hold).
+still be applied (but the theorem may not hold).
 We are interested to see how BBM-RS performed against others on these
-non-perfect datasets.
+non-linearly separable datasets.
 We compare BBM-RS to three baselines,
 [LCPA](https://arxiv.org/abs/1610.00168),
 [decision tree (DT)](https://books.google.co.il/books?hl=en&lr=&id=MGlQDwAAQBAJ&oi=fnd&pg=PP1&ots=gBmdjTJVdK&sig=\_jUBiPW4cTS7JYUKpzKcJLYipl4&redir_esc=y#v=onepage&q&f=false), and
@@ -452,7 +382,7 @@ average $\ell_\infty$
 distance to the closest adversarial example on correctly predicted test examples.
 The larger ER is, the more robust the classifier is.
 We measure a model's interpretability by evaluating its
-__Interpretation Complexity (IC)__.
+__interpretation complexity (IC)__.
 We measure IC with the number of unique feature-threshold pairs in the
 model (this corresponds to the number of conditions in the risk score).
 The smaller IC is, the more interpretable the classifier is.
@@ -605,13 +535,14 @@ well empirically.
 
 We investigated three important properties of a classifier: accuracy, robustness, and
 interpretability.
-We designed and analyzed an tree-based algorithm that provably achieves all these properties, under
+We designed and analyzed a tree-based algorithm that provably achieves all these properties, under
 linear separation with a margin assumption.
 Our research is a step towards building trustworthy models that provably achieve many desired
 properties.
 
 Our research raises many open problems.
-What is the optimal dependence between accuracy, IC, ER, and sample complexity?
+What is the optimal dependence between accuracy, interpretation complexity,
+empirical robustness, and sample complexity?
 Can we have guarantees using different notions of interpretability?
 We showed how to construct an interpretable, robust, and accurate model. But,
 for reliable machine learning models, many more properties are required,
