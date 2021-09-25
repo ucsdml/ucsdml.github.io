@@ -2,12 +2,12 @@
 layout: post
 mathjax: true
 title: "Connecting Interpretability and Robustness in Decision Trees through Separation"
-date: 2021-07-07 10:00:00 -0700
+date: 2021-10-24 10:00:00 -0700
 categories: jekyll update
 tags: adversarial non-parametric robustness
 paper_url: https://arxiv.org/abs/2102.07048
 code_url: https://github.com/yangarbiter/interpretable-robust-trees
-excerpt: The reliability of machine learning models has become more important. In this post, we explore the interaction between three different aspects, (1) interpretability, (2) robustness, and (3) accuracy, of machine learning models. We also construct a tree-based model that is guaranteed to be adversarially robust, interpretable, and accurate on linearly separable data.
+excerpt: Trustworthy machine learning (ML) has emerged as a crucial topic for the success of ML models. This post focuses on three fundamental properties of trustworthy ML models -- high accuracy, interpretability, and robustness. Building on ideas from ensemble learning, we construct a tree-based model that is guaranteed to be adversely robust, interpretable, and accurate on linearly separable data. Experiments confirm that our algorithm yields classifiers that are both interpretable, robust, and have high accuracy. 
 author: <a href='https://sites.google.com/view/michal-moshkovitz'>Michal Moshkovitz</a> and <a href='http://yyyang.me'>Yao-Yuan Yang</a>
 ---
 
@@ -33,9 +33,9 @@ Unfortunately, these properties are generally studied in isolation or only empir
 Here, we explore interpretability and robustness <ins>simultaneously</ins>,
 and examine it <ins>both theoretically and empirically</ins>.
 
-In this post, our objective is to build a decision tree with guarantees
-on its accuracy, robustness, and interpretability.
-We start by explaining what we mean by interpretability and robustness.
+<!--In this post, our objective is to build a decision tree with guarantees
+on its accuracy, robustness, and interpretability.-->
+We start this post by explaining what we mean by interpretability and robustness.
 Next, to derive guarantees, we need some assumptions on the data.
 We start with the known [$r$-separated data](http://proceedings.mlr.press/v80/wang18c.html).
 We show that although there exists a tree that is accurate and robust,
@@ -77,9 +77,8 @@ is \\[\Pr_{(x,y)\sim\mu}[h(x')=y \ |\  \forall x' \text{ with } \\|x-x'\\|\_\inf
 
 ## Guarantees under different data assumptions
 
-With enough background, let's look at what kind of guarantees we can give on decision trees.
-We focus on their robustness, interpretability, and accuracy.
-Without any assumptions on the data, we cannot guarantee all three to hold simultaneously.
+Without any assumptions on the data, we cannot guarantee
+accuracy, interpretability, and robustness to hold simultaneously.
 For example, if the true labels of the examples are different for close
 examples, a model cannot be astute (accurate and robust).
 In this section, we explore which data properties are sufficient for astuteness and interpretability.
@@ -133,9 +132,9 @@ hypothesis in the class with accuracy of at least $1/2+\gamma$.
 
 Now, we look at the hypothesis class of all possible decision stumps, and we want
 to show that this class is a weak learner.
-For each dataset $S=((x^1,y^1),\ldots,(x^m,y^m))$, we assume
-the best decision stump for this dataset is $h_S(x)=sign(x_i-\theta)$, where $i$
-is a feature and $\theta$ is a threshold that minimizes the training error
+For each dataset $S=((x^1,y^1),\ldots,(x^m,y^m))$, we denote
+the best decision stump for this dataset by $h_S(x)=sign(x_i-\theta)$, where $i$
+is a feature and $\theta$ is a threshold that minimize the error
 $\sum_{j=1}^m sign(x^j_i < \theta) y^j.$
 We can show that $h_S$ has accuracy better than $0.5$, i.e., better than a
 random guess:
@@ -189,7 +188,7 @@ a specific kind of decision tree ---
 We design our algorithm to learn a specific kind of decision tree ---
 [risk score](https://jmlr.org/papers/volume20/18-615/18-615.pdf).
 A risk score is composed of several conditions (e.g., $age \geq 75$), and each
-is matched with a weight, i.e., an integer.
+is matched with an integer weight.
 A score $s(x)$ of example $x$ is the weighted sum of all the satisfied
 conditions.
 The label is then $sign(s(x))$.
@@ -233,9 +232,8 @@ The label is then $sign(s(x))$.
 
 A risk score can be viewed as a decision tree with the same feature-threshold pair at
 each level (see example below).
-A risk score is equivalently a
-[catepillar tree](https://en.wikipedia.org/wiki/Caterpillar_tree), which has a simpler structure,
-and generally has fewer number of *unique* nodes.
+A risk score has simpler structure than a standard decision tree,
+and it generally has fewer number of *unique* nodes.
 Hence, they are considered
 [more interpretable than decision trees](https://jmlr.org/papers/volume20/18-615/18-615.pdf).
 The following table shows an example of a risk score.
@@ -253,8 +251,8 @@ The following table shows an example of a risk score.
     path in the decision tree and result in a score of $2$.
   </caption>
   </table>
-  <span style="width: 50%; overflow-x: auto; display: inline-block; margin: auto; float: left;">
-    <table style="width: 100%; font-size: 80%; margin: 0;" class="concise-table">
+  <span style="width: 49%; overflow-x: auto; display: inline-block; margin: 10pt; float: left;">
+    <table style="width: 100%; font-size: 80%; margin: auto;" class="concise-table">
       <tr>
         <th colspan="1" style="text-align: left;">features</th>
         <th colspan="1" style="text-align: center;">weights</th>
@@ -267,8 +265,8 @@ The following table shows an example of a risk score.
       <tr><th></th> <th>total scores=</th> <th></th></tr>
     </table>
   </span>
-  <span style="width: 48%; overflow-x: auto; display: inline-block; margin: auto; float: right;">
-    <img src='/assets/2021-07-07-interpretable-robust-trees/risk_score_tree.png' style="width: 100%">
+  <span style="width: 47%; overflow-x: auto; display: inline-block; margin: auto; float: right;">
+    <img src='/assets/2021-10-24-interpretable-robust-trees/risk_score_tree.png' style="width: 100%">
   </span>
 </div>
 
@@ -291,7 +289,7 @@ noise.
 We take each point in the sample and just make sure that it's a little
 bit closer to the decision boundary, see the figure below.
 {:refdef: style="text-align: center;"}
-  <img src='/assets/2021-07-07-interpretable-robust-trees/BBM_RS_add_noise.png'>
+  <img src='/assets/2021-10-24-interpretable-robust-trees/BBM_RS_add_noise.png'>
 {:refdef}
 The idea is that if the model is correct for the noisy point, then it
 should be correct for the point without the noise.
@@ -304,7 +302,8 @@ Before we examine this algorithm on real datasets, let’s check its running tim
 We focus on the case the margin and desired accuracy are constants.
 In this case, the number of steps BBM-RS will take is also constant.
 In each step, we run the weak learner and find the best $(i,\theta)$.
-So the overall time is linear in the input size and the time to run the weak learner.
+So the overall time is linear (up to logarithmic factors) in the input size and the time to run the
+weak learner.
 
 To summarize, we designed a new efficient algorithm, BBM-RS, that is robust, interpretable, and
 has high accuracy. The following theorem shows this. Please refer to
