@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title:  "Understanding Instance-based Interpretability of Variational Auto-Encoders"
-date:   2021-10-08 10:00:00 -0700
+date:   2021-10-15 10:00:00 -0700
 categories: jekyll update
 tags: nf
 author: <a href='https://cseweb.ucsd.edu/~z4kong'>Zhifeng Kong</a> and <a href='http://cseweb.ucsd.edu/~kamalika'>Kamalika Chaudhuri</a>
@@ -58,15 +58,15 @@ By looking at these counterfactual questions, we hope to reveal what influence f
 Let's first look at these questions in the context of several classical unsupervised learning methods. The goal is to provide intuition on what influence functions should tell us in the unsupervised setting. Consider the following two-dimensional training data $X$ composed of six clusters.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2021-10-08-interpretability-vae/six_cluster_nocolor.png" width="30%">
+<img src="/assets/2021-10-15-interpretability-vae/six_cluster_nocolor.png" width="30%">
 {:refdef}
 
 We consider three classical methods: the [$k$-nearest-neighbour](http://faculty.washington.edu/yenchic/18W_425/Lec7_knn_basis.pdf) ($k$-NN) density estimator, the [kernel density estimator](https://en.wikipedia.org/wiki/Kernel_density_estimation) (KDE), and [Gaussian mixture models](https://en.wikipedia.org/wiki/Mixture_model) (GMM). We fit these models on $X$ and the probability densities of these models are shown below.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2021-10-08-interpretability-vae/density_knn.jpg" width="32%">
-<img src="/assets/2021-10-08-interpretability-vae/density_kde.jpg" width="32%">
-<img src="/assets/2021-10-08-interpretability-vae/density_gmm.jpg" width="32%">
+<img src="/assets/2021-10-15-interpretability-vae/density_knn.jpg" width="32%">
+<img src="/assets/2021-10-15-interpretability-vae/density_kde.jpg" width="32%">
+<img src="/assets/2021-10-15-interpretability-vae/density_gmm.jpg" width="32%">
 {:refdef}
 
 # Self influences
@@ -78,7 +78,7 @@ The figure below provides some insights of high and low self influence samples. 
 - When using the GMM density estimator, high self influence samples are far away to cluster centers, and low self influence samples are near cluster centers.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2021-10-08-interpretability-vae/classic_selfinf.png" width="99%">
+<img src="/assets/2021-10-15-interpretability-vae/classic_selfinf.png" width="99%">
 {:refdef}
 
 <br />
@@ -95,7 +95,7 @@ The figures below visualize an example of proponents and opponents. The test sam
 Scatter plots of influences of all training samples:
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2021-10-08-interpretability-vae/classic_testinf.png" width="99%">
+<img src="/assets/2021-10-15-interpretability-vae/classic_testinf.png" width="99%">
 {:refdef}
 
 <!-- <center>
@@ -107,7 +107,7 @@ Scatter plots of influences of all training samples:
 And the zoom in view that only shows the cluster which $z$ belongs to:
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2021-10-08-interpretability-vae/classic_testinf_large.png" width="99%">
+<img src="/assets/2021-10-15-interpretability-vae/classic_testinf_large.png" width="99%">
 {:refdef}
 
 <br />
@@ -139,9 +139,9 @@ Are training samples the strongest proponents over themselves?
 The short answer is: yes. We visualize some training samples and their strongest proponents in the figures below. A sample is marked in a green box if it is exactly its strongest proponent, and in a red box otherwise. Quantitatively, almost all ($>99\%$) training samples are the strongest proponents of themselves, with only very few exceptions. And as shown, even if a samples is not its strongest proponent, it still ranks very high in the order of influence scores.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2021-10-08-interpretability-vae/sanity_mnist.png" width="30%">
+<img src="/assets/2021-10-15-interpretability-vae/sanity_mnist.png" width="30%">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="/assets/2021-10-08-interpretability-vae/sanity_cifarsub.png" width="30%">
+<img src="/assets/2021-10-15-interpretability-vae/sanity_cifarsub.png" width="30%">
 {:refdef}
 
 <br />
@@ -150,7 +150,7 @@ The short answer is: yes. We visualize some training samples and their strongest
 We visualize **high** self influence samples below. We find these samples are either hard to recognize or visually high-contrast.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2021-10-08-interpretability-vae/high_selfinf.png" width="80%">
+<img src="/assets/2021-10-15-interpretability-vae/high_selfinf.png" width="80%">
 {:refdef}
 
 <br />
@@ -158,7 +158,7 @@ We visualize **high** self influence samples below. We find these samples are ei
 We then visualize **low** self influence samples below. We find these samples share similar shapes or background.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2021-10-08-interpretability-vae/low_selfinf.png" width="80%">
+<img src="/assets/2021-10-15-interpretability-vae/low_selfinf.png" width="80%">
 {:refdef}
 
 <br />
@@ -168,7 +168,7 @@ These findings are consistent with the memorization analysis in the supervised s
 <!-- The relationship is demonstrated in the scatter plot below: generally, the larger loss, the larger self influence.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2021-10-08-interpretability-vae/selfinf_vs_loss.png" width="35%">
+<img src="/assets/2021-10-15-interpretability-vae/selfinf_vs_loss.png" width="35%">
 {:refdef}
 
 <br /> -->
@@ -181,7 +181,7 @@ unrecognizable handwritten digits or objects in MNIST or CIFAR. Similar approach
 We visualize strong proponents and opponents of several test samples below.
 
 {:refdef: style="text-align: center;"}
-<img src="/assets/2021-10-08-interpretability-vae/testinf.png" width="95%">
+<img src="/assets/2021-10-15-interpretability-vae/testinf.png" width="95%">
 {:refdef}
 
 <br />
