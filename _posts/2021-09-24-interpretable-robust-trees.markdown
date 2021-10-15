@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title: "Connecting Interpretability and Robustness in Decision Trees through Separation"
-date: 2021-10-24 10:00:00 -0700
+date: 2021-09-24 10:00:00 -0700
 categories: jekyll update
 tags: adversarial non-parametric robustness
 paper_url: https://arxiv.org/abs/2102.07048
@@ -266,7 +266,7 @@ The following table shows an example of a risk score.
     </table>
   </span>
   <span style="width: 47%; overflow-x: auto; display: inline-block; margin: auto; float: right;">
-    <img src='/assets/2021-10-24-interpretable-robust-trees/risk_score_tree.png' style="width: 100%">
+    <img src='/assets/2021-09-24-interpretable-robust-trees/risk_score_tree.png' style="width: 100%">
   </span>
 </div>
 
@@ -289,7 +289,7 @@ noise.
 We take each point in the sample and just make sure that it's a little
 bit closer to the decision boundary, see the figure below.
 {:refdef: style="text-align: center;"}
-  <img src='/assets/2021-10-24-interpretable-robust-trees/BBM_RS_add_noise.png'>
+  <img src='/assets/2021-09-24-interpretable-robust-trees/BBM_RS_add_noise.png'>
 {:refdef}
 The idea is that if the model is correct for the noisy point, then it
 should be correct for the point without the noise.
