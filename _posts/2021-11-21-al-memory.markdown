@@ -6,6 +6,7 @@ date:   2021-11-21 10:00:00 -0700
 categories: jekyll update
 tags: PAC-Learning, Active Learning, Bounded Memory
 author: <a href='http://cseweb.ucsd.edu/~nmhopkin/'>Max Hopkins</a>
+paper_url: https://arxiv.org/abs/2102.05047
 excerpt: Machine learning practice is dominated by massive supervised algorithms, but gathering sufficient data for these methods can often prove intractable. Active learning is an adaptive technique for annotating large datasets in exponentially fewer queries by finding the most informative examples. Prior works on (worst-case) active learning often require holding the entire dataset in memory, but this can also prove difficult for the desired use-case of big data! In this post, we cover recent work towards characterizing bounded memory active learning, opening the door to applications in settings (e.g., learning on mobile devices) where one can't necessarily hope to store all of your data at once.
 
 ---
