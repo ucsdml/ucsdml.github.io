@@ -12,3 +12,4 @@ bundle exec jekyll serve
 ```
 
 Then copy the contents in the `_site` directory to the master branch to update the blog.
+
