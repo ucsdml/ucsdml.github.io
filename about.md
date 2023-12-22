@@ -10,11 +10,13 @@ The UCSD ML blog is a forum for students, postdocs, and faculty from the greater
 ### UCSD ML Blog Editorial Board
 The editorial board consists of the following members:
 
-- [Yao-Yuan Yang](http://yyyang.me/)
-- [Cyrus Rashtchian](http://www.cyrusrashtchian.com/)
+- [Bo Zhao](https://b-zhao.github.io)
+- [Salva Rühling Cachay](https://salvarc.github.io)
 
-with faculty advisor [Kamalika Chaudhuri](http://cseweb.ucsd.edu/~kamalika/).
+with faculty advisor [Rose Yu](https://roseyu.com/).
 
-If you are affiliated with UCSD and interested in contributing to the blog, please send an mail to both {yay005, crashtchian} at eng dot ucsd dot edu.
+**Former editorial board:** [Yao-Yuan Yang](http://yyyang.me/), [Cyrus Rashtchian](http://www.cyrusrashtchian.com/), with faculty advisor [Kamalika Chaudhuri](http://cseweb.ucsd.edu/~kamalika/).
+
+If you are affiliated with UCSD and interested in contributing to the blog, please send an mail to bozhao at ucsd dot edu and salvaruehling at gmail dot com, and copy roseyu at ucsd dot edu.
 
 To receive email about new posts, please subscribe to the mailing list: [https://mailman.ucsd.edu/mailman/listinfo/ucsd-ml-l](https://mailman.ucsd.edu/mailman/listinfo/ucsd-ml-l).
