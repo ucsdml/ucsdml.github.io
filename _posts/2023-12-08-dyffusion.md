@@ -20,7 +20,7 @@ hidden: false
 
 ---
 
-<d-contents>
+<contents>
   <nav class="l-text figcaption">
   <h3>Contents</h3>
     <div><a href="#introduction"> Introduction </a></div>
@@ -57,7 +57,7 @@ hidden: false
     </ul>
     <div><a href="#conclusion"> Conclusion </a></div>
   </nav>
-</d-contents>
+</contents>
 
 <div class='l-body' align="center">
 <img class="img-fluid rounded z-depth-1" src="{{ site.baseurl }}/assets/img/2023-12-dyffusion/diagram.gif">
