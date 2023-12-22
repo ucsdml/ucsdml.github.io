@@ -20,6 +20,44 @@ comments: true
 ---
 
 
+<d-contents>
+  <nav class="l-text figcaption">
+  <h3>Contents</h3>
+    <div><a href="#introduction"> Introduction </a></div>
+    <ul>
+      <!--- <li><a href="#limitations-of-previous-work">Limitations of prior work</a></li> --->
+      <li><a href="#our-key-idea"> Our key idea </a></li>
+    </ul>
+    <div><a href="#notation--background"> Notation & Background </a></div>
+    <ul>
+      <li><a href="#problem-setup"> Problem setup </a></li>
+      <li><a href="#standard-diffusion-models"> Standard diffusion models </a></li>
+    </ul>
+    <div><a href="#dyffusion-dynamics-informed-diffusion-model"> DYffusion</a></div>
+    <ul>
+      <li><a href="#training-dyffusion"> Training DYffusion </a></li>
+      <li><a href="#temporal-interpolation-as-a-forward-process"> Temporal interpolation as a forward process </a></li>
+      <li><a href="#forecasting-as-a-reverse-process"> Forecasting as a reverse process </a></li>
+      <li><a href="#sampling-from-dyffusion"> Sampling from DYffusion </a></li>
+      <li><a href="#memory-footprint"> Memory footprint </a></li>
+    </ul>
+    <div><a href="#experimental-setup"> Experimental Setup </a></div>
+    <ul>
+      <li><a href="#datasets"> Datasets </a></li>
+      <li><a href="#baselines"> Baselines </a></li>
+      <li><a href="#neural-network-architectures"> Neural architectures </a></li>
+      <li><a href="#evaluation-metrics"> Evaluation metrics </a></li>
+    </ul>
+    <div><a href="#results"> Results </a></div>
+    <ul>
+      <li><a href="#quantitative-results"> Quantitative </a></li>
+      <li><a href="#qualitative-results"> Qualitative </a></li>
+      <li><a href="#temporal-super-resolution-and-sample-variability"> Temporal super-resolution </a></li>
+      <li><a href="#iterative-refinement-of-forecasts"> Iterative refinement </a></li>
+    </ul>
+    <div><a href="#conclusion"> Conclusion </a></div>
+  </nav>
+</d-contents>
 
 <div class='l-body' align="center">
 <img class="img-fluid rounded z-depth-1" src="{{ site.baseurl }}/assets/img/2023-12-dyffusion/diagram.gif">
