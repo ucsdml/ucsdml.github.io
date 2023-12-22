@@ -120,7 +120,7 @@ This leads to a scalable generalized diffusion model for probabilistic forecasti
 
 #### Problem setup
 We study the problem of probabilistic spatiotemporal forecasting using a dataset consisting of
-a time series of snapshots $\mathbf{x}_t \in \mathcal{X}$.
+a time series of snapshots $\mathbf{x}_t\in\mathcal{X}$.
 We focus on the task of forecasting a sequence of $h$ snapshots from a single initial condition. 
 That is, we aim to train a model to learn $P(\mathbf{x}_{t+1:t+h} \,|\, \mathbf{x}_t)$ .
 Note that during evaluation, we may evaluate the model on a larger horizon $H>h$ by running the model autoregressively.
