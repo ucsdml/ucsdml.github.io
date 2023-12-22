@@ -59,7 +59,6 @@ hidden: false
   </nav>
 </d-contents>
 
-
 <div class='l-body' align="center">
 <img class="img-fluid rounded z-depth-1" src="{{ site.baseurl }}/assets/img/2023-12-dyffusion/diagram.gif">
 <figcaption style="text-align: center; margin-top: 10px; margin-bottom: 10px;">

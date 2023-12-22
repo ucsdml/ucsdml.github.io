@@ -14,3 +14,9 @@
   padding: 5px 10px;
 }
 
+/*Change footnote background color */
+.footnote {
+  background-color: #f2f2f2;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
