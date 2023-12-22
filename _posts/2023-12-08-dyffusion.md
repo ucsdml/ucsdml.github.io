@@ -7,7 +7,7 @@ authors:
       url: https://salvarc.github.io/
       affiliations:
         name: UC San Diego
-bibliography: blogs.bib
+bibliography: blog_dyffusion.bib
 paper_url: https://arxiv.org/abs/2306.01984
 code_url: https://github.com/Rose-STL-Lab/dyffusion
 description: We introduce a novel diffusion model-based framework, DYffusion, for large-scale probabilistic forecasting.
@@ -19,44 +19,6 @@ comments: true
 
 ---
 
-<d-contents>
-  <nav class="l-text figcaption">
-  <h3>Contents</h3>
-    <div><a href="#introduction"> Introduction </a></div>
-    <ul>
-      <!--- <li><a href="#limitations-of-previous-work">Limitations of prior work</a></li> --->
-      <li><a href="#our-key-idea"> Our key idea </a></li>
-    </ul>
-    <div><a href="#notation--background"> Notation & Background </a></div>
-    <ul>
-      <li><a href="#problem-setup"> Problem setup </a></li>
-      <li><a href="#standard-diffusion-models"> Standard diffusion models </a></li>
-    </ul>
-    <div><a href="#dyffusion-dynamics-informed-diffusion-model"> DYffusion</a></div>
-    <ul>
-      <li><a href="#training-dyffusion"> Training DYffusion </a></li>
-      <li><a href="#temporal-interpolation-as-a-forward-process"> Temporal interpolation as a forward process </a></li>
-      <li><a href="#forecasting-as-a-reverse-process"> Forecasting as a reverse process </a></li>
-      <li><a href="#sampling-from-dyffusion"> Sampling from DYffusion </a></li>
-      <li><a href="#memory-footprint"> Memory footprint </a></li>
-    </ul>
-    <div><a href="#experimental-setup"> Experimental Setup </a></div>
-    <ul>
-      <li><a href="#datasets"> Datasets </a></li>
-      <li><a href="#baselines"> Baselines </a></li>
-      <li><a href="#neural-network-architectures"> Neural architectures </a></li>
-      <li><a href="#evaluation-metrics"> Evaluation metrics </a></li>
-    </ul>
-    <div><a href="#results"> Results </a></div>
-    <ul>
-      <li><a href="#quantitative-results"> Quantitative </a></li>
-      <li><a href="#qualitative-results"> Qualitative </a></li>
-      <li><a href="#temporal-super-resolution-and-sample-variability"> Temporal super-resolution </a></li>
-      <li><a href="#iterative-refinement-of-forecasts"> Iterative refinement </a></li>
-    </ul>
-    <div><a href="#conclusion"> Conclusion </a></div>
-  </nav>
-</d-contents>
 
 
 <div class='l-body' align="center">
@@ -120,12 +82,12 @@ This leads to a scalable generalized diffusion model for probabilistic forecasti
 
 #### Problem setup
 We study the problem of probabilistic spatiotemporal forecasting using a dataset consisting of
-a time series of snapshots $$ \mathbf{x}_t \in \mathcal{X}$$.
-We focus on the task of forecasting a sequence of $$h$$ snapshots from a single initial condition. 
-That is, we aim to train a model to learn $$P(\mathbf{x}_{t+1:t+h} \,|\, \mathbf{x}_t)$$ .
-Note that during evaluation, we may evaluate the model on a larger horizon $$H>h$$ by running the model autoregressively.
+a time series of snapshots $ \mathbf{x}_t \in \mathcal{X}$.
+We focus on the task of forecasting a sequence of $h$ snapshots from a single initial condition. 
+That is, we aim to train a model to learn $P(\mathbf{x}_{t+1:t+h} \,|\, \mathbf{x}_t)$ .
+Note that during evaluation, we may evaluate the model on a larger horizon $H>h$ by running the model autoregressively.
 
-[//]: # (Here, $$\mathcal{X}$$ represents the space in which the data lies, which )
+[//]: # (Here, $\mathcal{X}$ represents the space in which the data lies, which )
 [//]: # (may consist of spatial dimensions &#40;e.g., latitude, longitude, atmospheric height&#41; and a channel dimension &#40;e.g., velocities, temperature, humidity&#41;.)
 
 
@@ -136,24 +98,24 @@ Diffusion models iteratively transform data between an initial distribution
 and the target distribution over multiple diffusion steps<d-cite key="sohldickstein2015deepunsupervised, ho2020ddpm, karras2022edm"></d-cite>.
 Here, we adapt the 
 <a src="https://lilianweng.github.io/posts/2021-07-11-diffusion-models/#forward-diffusion-process">common notation for diffusion models</a> 
-to use a superscript $$n$$ for the diffusion states $$\mathbf{s}^{(n)}$$, 
-to distinguish them from the timesteps of the data, $$\mathbf{x}_t$$.
-Given a data sample $$\mathbf{s}^{(0)}$$, a standard diffusion model is defined through a _forward diffusion process_ 
-$$q(\mathbf{s}^{(n)} \vert \mathbf{s}^{(n-1)})$$
-in which small amounts of Gaussian noise are added to the sample in $$N$$ steps, producing a sequence of noisy samples 
-$$\mathbf{s}^{(1)}, \ldots, \mathbf{s}^{(N)}$$. 
+to use a superscript $n$ for the diffusion states $\mathbf{s}^{(n)}$, 
+to distinguish them from the timesteps of the data, $\mathbf{x}_t$.
+Given a data sample $\mathbf{s}^{(0)}$, a standard diffusion model is defined through a _forward diffusion process_ 
+$q(\mathbf{s}^{(n)} \vert \mathbf{s}^{(n-1)})$
+in which small amounts of Gaussian noise are added to the sample in $N$ steps, producing a sequence of noisy samples 
+$\mathbf{s}^{(1)}, \ldots, \mathbf{s}^{(N)}$. 
 Adopting the notation for generalized diffusion models from <d-cite key="bansal2022cold"></d-cite>, we can also consider
-a forward process operator, $$D$$, that outputs the corrupted samples $$\mathbf{s}^{(n)} = D(\mathbf{s}^{(0)}, n)$$.
+a forward process operator, $D$, that outputs the corrupted samples $\mathbf{s}^{(n)} = D(\mathbf{s}^{(0)}, n)$.
 
-[//]: # (The step sizes are controlled by a variance schedule $$\{\beta_n \in &#40;0, 1&#41;\}_{n=1}^N$$ such that )
-[//]: # (the samples are corrupted with increasing levels of noise for $$n\rightarrow N$$ and $$\mathbf{s}^{&#40;N&#41;} \sim \mathcal{N}&#40;\mathbf{0}, \mathbf{I}&#41;$$.)
+[//]: # (The step sizes are controlled by a variance schedule $\{\beta_n \in &#40;0, 1&#41;\}_{n=1}^N$ such that )
+[//]: # (the samples are corrupted with increasing levels of noise for $n\rightarrow N$ and $\mathbf{s}^{&#40;N&#41;} \sim \mathcal{N}&#40;\mathbf{0}, \mathbf{I}&#41;$.)
 
-[//]: # ($$)
+[//]: # ($)
 [//]: # (\begin{equation*} )
 [//]: # (q&#40;\mathbf{s}^{&#40;n&#41;} \vert \mathbf{s}^{&#40;n-1&#41;}&#41; = \mathcal{N}&#40;\mathbf{s}^{&#40;n&#41;}; \sqrt{1 - \beta_n} \mathbf{s}^{&#40;n-1&#41;}, \beta_n\mathbf{I}&#41; \quad )
 [//]: # (q&#40;\mathbf{s}^{&#40;1:N&#41;} \vert \mathbf{s}^{&#40;0&#41;}&#41; = \prod^N_{n=1} q&#40;\mathbf{s}^{&#40;n&#41;} \vert \mathbf{s}^{&#40;n-1&#41;}&#41;)
 [//]: # (\end{equation*})
-[//]: # ($$)
+[//]: # ($)
 
 <div class='l-body'>
 <img class="img-fluid" src="{{ site.baseurl }}/assets/img/2023-12-dyffusion/noise-diagram-gaussian.png">
@@ -161,15 +123,15 @@ a forward process operator, $$D$$, that outputs the corrupted samples $$\mathbf{
 </div>
 
 [//]: # (Adopting the notation from <d-cite key="bansal2022cold"></d-cite> for generalized diffusion models, we can also consider)
-[//]: # (a forward process operator, $$D$$, that outputs the corrupted samples $$\mathbf{s}^{&#40;n&#41;} = D&#40;\mathbf{s}^{&#40;0&#41;}, n&#41;$$ )
-[//]: # (for increasing degrees of corruption $$n\in\{1,\dots, N\}$$.)
+[//]: # (a forward process operator, $D$, that outputs the corrupted samples $\mathbf{s}^{&#40;n&#41;} = D&#40;\mathbf{s}^{&#40;0&#41;}, n&#41;$ )
+[//]: # (for increasing degrees of corruption $n\in\{1,\dots, N\}$.)
 
-[//]: # (A denoising network $$R_\theta$$, parameterized by $$\theta$$, is trained to restore $$\mathbf{s}^{&#40;0&#41;}$$,)
-[//]: # (i.e. such that $$R_\theta&#40;\mathbf{s}^{&#40;n&#41;}, n&#41; \approx \mathbf{s}^{&#40;0&#41;}$$. )
+[//]: # (A denoising network $R_\theta$, parameterized by $\theta$, is trained to restore $\mathbf{s}^{&#40;0&#41;}$,)
+[//]: # (i.e. such that $R_\theta&#40;\mathbf{s}^{&#40;n&#41;}, n&#41; \approx \mathbf{s}^{&#40;0&#41;}$. )
 [//]: # (For dynamics forecasting, the diffusion model can be conditioned on the initial conditions by considering )
-[//]: # ($$R_\theta&#40;\mathbf{s}^{&#40;n&#41;}, \mathbf{x}_{t}, n&#41;$$, and trained to minimize the objective)
+[//]: # ($R_\theta&#40;\mathbf{s}^{&#40;n&#41;}, \mathbf{x}_{t}, n&#41;$, and trained to minimize the objective)
 [//]: # ()
-[//]: # ($$)
+[//]: # ($)
 [//]: # (\begin{equation})
 [//]: # (    \min_\theta )
 [//]: # (    \mathbb{E}_{n \sim \mathcal{U}[\![1, N]\!], \mathbf{x}_{t}, \mathbf{s}^{&#40;0&#41;}\sim \mathcal{X}})
@@ -178,14 +140,14 @@ a forward process operator, $$D$$, that outputs the corrupted samples $$\mathbf{
 [//]: # (    \right],)
 [//]: # (\label{eq:diffusionmodels})
 [//]: # (\end{equation})
-[//]: # ($$)
+[//]: # ($)
 [//]: # ()
-[//]: # (where $$\mathcal{U}[\![1, N]\!]$$ denotes the uniform distribution over the integers $$\{1, \ldots, N\}$$ and)
-[//]: # ($$\mathbf{s}^{&#40;0&#41;}$$ is the forecasting target<d-footnote>In practice, $R_\theta$ can also be trained to predict the Gaussian noise that has )
+[//]: # (where $\mathcal{U}[\![1, N]\!]$ denotes the uniform distribution over the integers $\{1, \ldots, N\}$ and)
+[//]: # ($\mathbf{s}^{&#40;0&#41;}$ is the forecasting target<d-footnote>In practice, $R_\theta$ can also be trained to predict the Gaussian noise that has )
 [//]: # (been added to the data sample using a score matching objective <d-cite key="ho2020ddpm"></d-cite>.</d-footnote>.)
 [//]: # (Adopting the common approach of video diffusion models<d-cite key="voleti2022mcvd, ho2022videodiffusion, yang2022diffusion, singer2022makeavideo, ho2022imagenvideo, harvey2022flexiblevideos"></d-cite>, )
 [//]: # (we train our diffusion model baselines to predict multiple steps, i.e. )
-[//]: # ($$\mathbf{s}^{&#40;0&#41;} = \mathbf{x}_{t+1:t+h}$$<d-footnote>A single-step training approach $\mathbf{s}^{&#40;0&#41;} = \mathbf{x}_{t+1}$ )
+[//]: # ($\mathbf{s}^{&#40;0&#41;} = \mathbf{x}_{t+1:t+h}$<d-footnote>A single-step training approach $\mathbf{s}^{&#40;0&#41;} = \mathbf{x}_{t+1}$ )
 [//]: # (would be possible too. However, it is has been established that multi-step training aids inference rollout performance and stability <d-cite key="weyn2019canmachines, ravuri2021skilful, brandstetter2022message"></d-cite>.)
 [//]: # (Moreover, autoregressive single-step forecasting with a standard diffusion model would be extremely time-consuming during inference time.</d-footnote>.)
 
@@ -196,7 +158,7 @@ a forward process operator, $$D$$, that outputs the corrupted samples $$\mathbf{
 [//]: # (To make the heading smaller, you need to edit the css 
 
 The key innovation of our framework, DYffusion, is a reimagining of the diffusion processes to more naturally model 
-spatiotemporal sequences, $$\mathbf{x}_{t:t+h}$$.
+spatiotemporal sequences, $\mathbf{x}_{t:t+h}$.
 Specifically, we design the reverse (forward) process to step forward (backward) in time 
 so that our diffusion model emulates the temporal dynamics in 
 the data<d-footnote>Similarly to<d-cite key="song2021ddim, bansal2022cold"></d-cite>, 
@@ -208,9 +170,9 @@ Differently to all prior work, our processes are _not_ based on data corruption 
 <figcaption style="text-align: center; margin-top: 10px; margin-bottom: 10px">Graphical model for DYffusion. </figcaption>
 </div>
 
-Implementation-wise, we replace the standard denoising network, $$R_\theta$$, with a deterministic forecaster network, $$F_\theta$$.
+Implementation-wise, we replace the standard denoising network, $R_\theta$, with a deterministic forecaster network, $F_\theta$.
 Because we do not have a closed-form expression for the forward process, we also need to learn it from data
-by replacing the standard forward process operator, $$D$$, with a stochastic interpolator network $$\mathcal{I}_\phi$$.
+by replacing the standard forward process operator, $D$, with a stochastic interpolator network $\mathcal{I}_\phi$.
 Intermediate steps in DYffusion's reverse process can be reused as forecasts for actual timesteps.
 Another benefit of our approach is that the reverse process is initialized with the initial conditions of the dynamics 
 and operates in observation space at all times. 
@@ -224,11 +186,11 @@ We propose to learn the forward and reverse process in two separate stages:
 #### Temporal interpolation as a forward process
 
 To learn our proposed temporal forward process,
-we train a time-conditioned network $$\mathcal{I}_\phi$$ to interpolate between snapshots of data. 
-Given a horizon $$h$$, we train the interpolator net so that 
-$$\mathcal{I}_\phi(\mathbf{x}_t, \mathbf{x}_{t+h}, i) \approx \mathbf{x}_{t+i}$$ for $$i \in \{1, \ldots, h-1\}$$ using the objective:
+we train a time-conditioned network $\mathcal{I}_\phi$ to interpolate between snapshots of data. 
+Given a horizon $h$, we train the interpolator net so that 
+$\mathcal{I}_\phi(\mathbf{x}_t, \mathbf{x}_{t+h}, i) \approx \mathbf{x}_{t+i}$ for $i \in \{1, \ldots, h-1\}$ using the objective:
 
-$$
+$
 \begin{equation}
     \min_\phi 
         \mathbb{E}_{i \sim \mathcal{U}[\![1, h-1]\!],  \mathbf{x}_{t, t+i, t+h} \sim \mathcal{X}}
@@ -237,27 +199,27 @@ $$
         \|^2 \right].
 \label{eq:interpolation}
 \end{equation}
-$$
+$
 
 Interpolation is an easier task than forecasting, and we can use the resulting interpolator
 for temporal super-resolution during inference to interpolate beyond the temporal resolution of the data.
-That is, the time input can be continuous, with $$i \in (0, h-1)$$. 
-It is crucial for the interpolator, $$\mathcal{I}_\phi$$,
+That is, the time input can be continuous, with $i \in (0, h-1)$. 
+It is crucial for the interpolator, $\mathcal{I}_\phi$,
 to _produce stochastic outputs_ within DYffusion so that its forward process is stochastic, and it can generate probabilistic forecasts at inference time.
 We enable this using Monte Carlo dropout <d-cite key="gal2016dropout"></d-cite> at inference time.
 
 
 #### Forecasting as a reverse process
 
-In the second stage, we train a forecaster network $$F_\theta$$ to forecast $$\mathbf{x}_{t+h}$$
-such that $$F_\theta(\mathcal{I}_\phi(\mathbf{x}_{t}, \mathbf{x}_{t+h}, i \vert \xi), i)\approx \mathbf{x}_{t+h}$$
-for $$i \in S =[i_n]_{n=0}^{N-1}$$, where $$S$$ denotes a schedule coupling the diffusion step to the interpolation timestep. 
-The interpolator network, $$\mathcal{I}$$, is frozen with inference stochasticity enabled,
-represented by the random variable $$\xi$$. 
-In our experiments, $$\xi$$ stands for the randomly dropped out weights of the neural network and is omitted henceforth for clarity.
+In the second stage, we train a forecaster network $F_\theta$ to forecast $\mathbf{x}_{t+h}$
+such that $F_\theta(\mathcal{I}_\phi(\mathbf{x}_{t}, \mathbf{x}_{t+h}, i \vert \xi), i)\approx \mathbf{x}_{t+h}$
+for $i \in S =[i_n]_{n=0}^{N-1}$, where $S$ denotes a schedule coupling the diffusion step to the interpolation timestep. 
+The interpolator network, $\mathcal{I}$, is frozen with inference stochasticity enabled,
+represented by the random variable $\xi$. 
+In our experiments, $\xi$ stands for the randomly dropped out weights of the neural network and is omitted henceforth for clarity.
 Specifically, we seek to optimize the objective
 
-$$
+$
 \begin{equation}
     \min_\theta 
         \mathbb{E}_{n \sim \mathcal{U}[\![0, N-1]\!], \mathbf{x}_{t, t+h}\sim \mathcal{X}}
@@ -266,17 +228,17 @@ $$
         \|^2 \right].
 \label{eq:forecaster}
 \end{equation}
-$$
+$
 
-To include the setting where $$F_\theta$$ learns to forecast the initial conditions, 
-we define $$i_0 := 0$$ and $$\mathcal{I}_\phi(\mathbf{x}_{t}, \cdot, i_0) := \mathbf{x}_t$$.
+To include the setting where $F_\theta$ learns to forecast the initial conditions, 
+we define $i_0 := 0$ and $\mathcal{I}_\phi(\mathbf{x}_{t}, \cdot, i_0) := \mathbf{x}_t$.
 In the simplest case, the forecaster net is supervised by all timesteps given
-by the temporal resolution of the training data. That is, $$N=h$$ and $$S = [j]_{j=0}^{h-1}$$. 
-Generally, the schedule should satisfy $$0 = i_0 < i_n < i_m < h$$ for $$0 < n < m \leq N-1$$.
+by the temporal resolution of the training data. That is, $N=h$ and $S = [j]_{j=0}^{h-1}$. 
+Generally, the schedule should satisfy $0 = i_0 < i_n < i_m < h$ for $0 < n < m \leq N-1$.
 
-[//]: # (As the time condition to our diffusion backbone is $$i_n$$ instead of $$n$$,)
+[//]: # (As the time condition to our diffusion backbone is $i_n$ instead of $n$,)
 [//]: # (we can choose _any_ diffusion-dynamics schedule during training or inference )
-[//]: # (and even use $$F_\theta$$ for unseen timesteps.  )
+[//]: # (and even use $F_\theta$ for unseen timesteps.  )
 
 [//]: # (Make algo image only be 75% of the page width)
 <div class='l-body' align="center">
@@ -284,20 +246,20 @@ Generally, the schedule should satisfy $$0 = i_0 < i_n < i_m < h$$ for $$0 < n <
 <figcaption style="text-align: center; margin-top: 10px; margin-bottom: 10px">DYffusion's two-stage training procedure is summarized in the algorithm above. </figcaption>
 </div>
 
-[//]: # (Because the interpolator $$\mathcal{I}_\phi$$ is frozen in the second stage,)
-[//]: # (the imperfect forecasts  $$\hat{\mathbf{x}}_{t+h} = F_\theta&#40;\mathcal{I}_\phi&#40;\mathbf{x}_{t}, \mathbf{x}_{t+h}, i_n&#41;, i_n&#41;$$)
+[//]: # (Because the interpolator $\mathcal{I}_\phi$ is frozen in the second stage,)
+[//]: # (the imperfect forecasts  $\hat{\mathbf{x}}_{t+h} = F_\theta&#40;\mathcal{I}_\phi&#40;\mathbf{x}_{t}, \mathbf{x}_{t+h}, i_n&#41;, i_n&#41;$)
 [//]: # (may degrade accuracy when used during sequential sampling. )
 [//]: # (To handle this, we introduce an optional one-step look-ahead loss term )
-[//]: # ($$\|  F_\theta&#40;\mathcal{I}_\phi&#40;\mathbf{x}_{t}, \hat{\mathbf{x}}_{t+h}, i_{n+1}&#41;, i_{n+1}&#41; - \mathbf{x}_{t+h} \|^2$$ )
-[//]: # (whenever $$n+1 < N$$ and weight the two loss terms equally. )
-[//]: # (Additionally, providing a clean or noised form of the initial conditions $$\mathbf{x}_t$$ as an additional input to)
+[//]: # ($\|  F_\theta&#40;\mathcal{I}_\phi&#40;\mathbf{x}_{t}, \hat{\mathbf{x}}_{t+h}, i_{n+1}&#41;, i_{n+1}&#41; - \mathbf{x}_{t+h} \|^2$ )
+[//]: # (whenever $n+1 < N$ and weight the two loss terms equally. )
+[//]: # (Additionally, providing a clean or noised form of the initial conditions $\mathbf{x}_t$ as an additional input to)
 [//]: # (the forecaster net can improve performance. )
 [//]: # (These additional tricks are discussed in more details in the Appendix B of <a href="https://arxiv.org/abs/2306.01984">our paper</a>.)
 
 ### Sampling from DYffusion
 
 Our above design for the forward and reverse processes of DYffusion, implies the following generative process:
-$$
+$
 \begin{equation}
     p_\theta(\mathbf{s}^{(n+1)} | \mathbf{s}^{(n)}, \mathbf{x}_t) = 
     \begin{cases}
@@ -306,13 +268,13 @@ $$
     \end{cases} 
     \label{eq:new-reverse}
 \end{equation}
-$$
+$
 
-where $$\mathbf{s}^{(0)}=\mathbf{x}_t$$ and $$\mathbf{s}^{(n)}\approx\mathbf{x}_{t+i_n}$$ 
+where $\mathbf{s}^{(0)}=\mathbf{x}_t$ and $\mathbf{s}^{(n)}\approx\mathbf{x}_{t+i_n}$ 
 correspond to the initial conditions and predictions of intermediate steps, respectively.
 In our formulations, we reverse the diffusion step indexing to align with the temporal indexing of the data. 
-That is, $$n=0$$ refers to the start of the reverse process, 
-while $$n=N$$ refers to the final output of the reverse process with $$\mathbf{s}^{(N)}\approx\mathbf{x}_{t+h}$$.
+That is, $n=0$ refers to the start of the reverse process, 
+while $n=N$ refers to the final output of the reverse process with $\mathbf{s}^{(N)}\approx\mathbf{x}_{t+h}$.
 Our reverse process steps forward in time, in contrast to the mapping from noise to data in standard diffusion models. 
 As a result, DYffusion should require fewer diffusion steps and data.
 
@@ -329,10 +291,10 @@ In our experiments, we adapt the sampling algorithm from <d-cite key="bansal2022
 [//]: # (In Appendix~\ref{appendix:ode-cold-is-better}, we also discuss a simpler but less performant sampling algorithm.)
 During the sampling process, our method essentially alternates between forecasting and interpolation, 
 as illustrated in the figure below.
-$$R_\theta$$ always predicts the last timestep, $$\mathbf{x}_{t+h}$$, 
-but iteratively improves those forecasts as the reverse process comes closer in time to $$t+h$$.
+$R_\theta$ always predicts the last timestep, $\mathbf{x}_{t+h}$, 
+but iteratively improves those forecasts as the reverse process comes closer in time to $t+h$.
 This is analogous to the iterative denoising of the "clean" data in standard diffusion models.
-This motivates line 6 of Alg. 2, where the final forecast of $$\mathbf{x}_{t+h}$$ can be used to
+This motivates line 6 of Alg. 2, where the final forecast of $\mathbf{x}_{t+h}$ can be used to
 fine-tune intermediate predictions or to increase the temporal resolution of the forecast.
 
 <div class='l-body' align="center">
@@ -353,12 +315,12 @@ The <span style="color:blue;font-weight:bold">blue</span> lines represent the su
 
 ### Memory footprint
 
-During training, DYffusion only requires $$\mathbf{x}_t$$ and $$\mathbf{x}_{t+h}$$ (plus $$\mathbf{x}_{t+i}$$ during the first interpolation stage),
-resulting in a _constant memory footprint as a function of_ $$h$$. 
+During training, DYffusion only requires $\mathbf{x}_t$ and $\mathbf{x}_{t+h}$ (plus $\mathbf{x}_{t+i}$ during the first interpolation stage),
+resulting in a _constant memory footprint as a function of_ $h$. 
 In contrast, direct multi-step prediction models including video diffusion models or (autoregressive) multi-step loss approaches require 
-$$\mathbf{x}_{t:t+h}$$ to compute the loss. 
-This means that these models must fit $$h+1$$ timesteps of data into memory (and may need to compute gradients recursively through them),
-which scales poorly with the training horizon $$h$$. 
+$\mathbf{x}_{t:t+h}$ to compute the loss. 
+This means that these models must fit $h+1$ timesteps of data into memory (and may need to compute gradients recursively through them),
+which scales poorly with the training horizon $h$. 
 Therefore, many are limited to predicting a small number of frames or snapshots.
 For example, our main video diffusion model baseline, MCVD, trains on a maximum of 5 video frames due to GPU memory constraints <d-cite key="voleti2022mcvd"></d-cite>.
 
@@ -382,10 +344,10 @@ Unlike the data based on the NEMO dataset in <d-cite key="de2018physicalsstbasel
 we choose OISSTv2 as our SST dataset because it contains more data (although it has a lower spatial resolution of $1/4^\circ$ compared to $1/12^\circ$ of NEMO).</d-footnote>.
 We train, validate, and test all models for the years 1982-2019, 2020, and 2021, respectively.
 2. **Navier-Stokes** flow benchmark dataset from <d-cite key="otness21nnbenchmark"></d-cite>, which consists of a
-$$221\times42$$ grid. Each trajectory contains four randomly generated circular obstacles that block the flow.
-The channels consist of the $$x$$ and $$y$$ velocities as well as a pressure field and the viscosity is $$1e\text{-}3$$.
+$221\times42$ grid. Each trajectory contains four randomly generated circular obstacles that block the flow.
+The channels consist of the $x$ and $y$ velocities as well as a pressure field and the viscosity is $1e\text{-}3$.
 Boundary conditions and obstacle masks are given as additional inputs to all models.
-3. **Spring Mesh** benchmark dataset from <d-cite key="otness21nnbenchmark"></d-cite>. It represents a $$10\times10$$ grid of
+3. **Spring Mesh** benchmark dataset from <d-cite key="otness21nnbenchmark"></d-cite>. It represents a $10\times10$ grid of
 particles connected by springs, each with mass 1. The channels consist of two position and momentum fields each.
 
 We follow the official train, validation, and test splits from <d-cite key="otness21nnbenchmark"></d-cite> for the Navier-Stokes and spring mesh datasets, 
@@ -404,10 +366,10 @@ We use the following baselines:
 - Official **deterministic** baselines from<d-cite key="otness21nnbenchmark"></d-cite> for 
 the Navier-Stokes and spring mesh datasets <d-footnote>Due to their deterministic nature, we exclude these baselines from our main probabilistic benchmarks.</d-footnote>.
 
-MCVD and the multi-step DDPM predict the timesteps $$\mathbf{x}_{t+1:t+h}$$ based on $$\mathbf{x}_{t}$$.
+MCVD and the multi-step DDPM predict the timesteps $\mathbf{x}_{t+1:t+h}$ based on $\mathbf{x}_{t}$.
 The barebone backbone network baselines are time-conditioned forecasters trained on the multi-step objective 
-$$\mathbb{E}_{i \sim \mathcal{U}[\![1, h]\!], \mathbf{x}_{t, t+i}\sim \mathcal{X}} 
-    \| F_\theta(\mathbf{x}_{t}, i) - \mathbf{x}_{t+i}\|^2$$ 
+$\mathbb{E}_{i \sim \mathcal{U}[\![1, h]\!], \mathbf{x}_{t, t+i}\sim \mathcal{X}} 
+    \| F_\theta(\mathbf{x}_{t}, i) - \mathbf{x}_{t+i}\|^2$ 
 from scratch<d-footnote>We found it to perform very similarly to predicting all $h$ 
 horizon timesteps at once in a single forward pass, i.e. on the 
 objective $\mathbb{E}_{\mathbf{x}_{t:t+h}\sim \mathcal{X}} \| F_\theta(\mathbf{x}_{t}) - \mathbf{x}_{t+1:t+h}\|^2$</d-footnote>.
@@ -521,10 +483,10 @@ Exemplary samples from DYffusion and the best baseline, Dropout, as well as the 
 
 Motivated by the continuous-time nature of DYffusion, we aim to study in this experiment whether it is possible to forecast
 skillfully beyond the resolution given by the data. 
-Here, we forecast the same Navier-Stokes trajectory shown in the video above but at $$8\times$$ resolution. 
+Here, we forecast the same Navier-Stokes trajectory shown in the video above but at $8\times$ resolution. 
 That is, DYffusion forecasts 512 timesteps instead of 64 in total.
-This behavior can be achieved by either changing the sampling trajectory $$[i_n]_{n=0}^{N-1}$$ or 
-by including additional output timesteps, $$J$$, for the refinement step of line 6 in Alg. 2.
+This behavior can be achieved by either changing the sampling trajectory $[i_n]_{n=0}^{N-1}$ or 
+by including additional output timesteps, $J$, for the refinement step of line 6 in Alg. 2.
 In the video below, we choose to do the latter and find the 5 sampled forecasts to be visibly pleasing and temporally consistent with the ground truth.
 
 [//]: # (Embed mp4 video)
@@ -549,10 +511,10 @@ consistently reached values close to 1.
 
 ### Iterative refinement of forecasts 
 
-DYffusion's forecaster network repeatedly predicts the same timestep, $$t+h$$, during sampling.
+DYffusion's forecaster network repeatedly predicts the same timestep, $t+h$, during sampling.
 Thus, we need to verify that these forecasts, 
-$$\hat{\mathbf{x}}_{t+h} = F_\theta(\mathbf{x}_{t+i_n}, i_n)$$, tend to improve throughout the course of the reverse process, 
-i.e. as $$n\rightarrow N$$ and $$\mathbf{x}_{t+i_n}\rightarrow\mathbf{x}_{t+h}$$.
+$\hat{\mathbf{x}}_{t+h} = F_\theta(\mathbf{x}_{t+i_n}, i_n)$, tend to improve throughout the course of the reverse process, 
+i.e. as $n\rightarrow N$ and $\mathbf{x}_{t+i_n}\rightarrow\mathbf{x}_{t+h}$.
 Below we show that this is indeed the case for the Navier-Stokes dataset. 
 Generally, we find that this observation tends to hold especially for the probabilistic metrics, CRPS and SSR, 
 while the trend is less clear for the MSE across all datasets (see Fig. 7 of <a href="https://arxiv.org/abs/2306.01984">our paper</a>).
