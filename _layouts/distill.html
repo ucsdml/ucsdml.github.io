@@ -2,7 +2,7 @@
 <!-- _layouts/distill.html -->
 <html>
   <head>
-    {%- include head.html %}
+    {%- include head_distill.html %}
 
     {% include scripts/jquery.html %}
     {% include scripts/mathjax.html %}
@@ -59,7 +59,7 @@
   <body class="{%- if site.navbar_fixed -%}fixed-top-nav{%- endif -%} {%- unless site.footer_fixed -%}sticky-bottom-footer{%- endunless -%}">
 
     <!-- Header -->
-    {%- include header.html %}
+    {%- include header_distill.html %}
 
     <!-- Content -->
     <div class="post distill">
