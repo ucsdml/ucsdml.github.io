@@ -15,7 +15,7 @@ and privacy concerns demand that they very often be kept confidential. Consequen
 predictions. To this end, we propose FairProof – a system that uses ZeroKnowledge Proofs (a cryptographic primitive) to publicly verify the fairness of
 a model, while maintaining confidentiality. We also propose a fairness certification algorithm for fully-connected neural networks which is befitting to ZKPs
 and is used in this system. We implement FairProof in Gnark and demonstrate empirically that our system is practically feasible. Code is available at
-[https://github.com/infinite-pursuits/FairProof](https://github.com/infinite-pursuits/FairProos).
+
 
 ---
 
