@@ -49,7 +49,7 @@ There are two important parts to FairProof : 1) How to calculate the fairness ce
 The fairness metric we use is Local Individual Fairness (IF) and give a simple algorithm to calculate this certificate by using a connection between adversarial robustness and IF.  Experimentally, we see that the resulting certification algorithm is able to differentiate between less and more fair models.
 
 <div class='l-body' align="center">
-<img class="img-fluid rounded z-depth-1" src="{{ site.baseurl }}/assets/img/2024-07-fairproof/fair-unfair">
+<img class="img-fluid rounded z-depth-1" src="{{ site.baseurl }}/assets/img/2024-07-fairproof/fair-unfair.png">
 <figcaption style="text-align: center; margin-top: 10px; margin-bottom: 10px;"> Histogram of fairness parameter for fair and unfair models for 100 randomly sampled data points. Fairness parameter values are higher for more fair models.</figcaption>
 </div>
 
@@ -60,7 +60,7 @@ Next we must code this certification algorithm in a ZKP library. However, ZKPs a
 Empirically we find that the maximum proof generation time is on ~4 min while the maximum verification time is ~3 seconds (note the change from minutes to seconds). Maximum time is consumed by the VerifyNeighbor functionality. Also the proof size is a meagre 200 KB.
 
 <div class='l-body' align="center">
-<img class="img-fluid rounded z-depth-1" src="{{ site.baseurl }}/assets/img/2024-07-fairproof/fairproof-results">
+<img class="img-fluid rounded z-depth-1" src="{{ site.baseurl }}/assets/img/2024-07-fairproof/fairproof-results.png">
 <figcaption style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
 Results are over 100 randomly sampled points from the test sete. (a) Average Proof Generation (in mins) and Verification times (in secs) for different models. Offline computations are done in the initial setup phase while Online computations are done for every new query. Verification is only done online, for every query. (b) Breakdown of the proof generation time (in mins) for the data point with the median time. VerifyNeighbor sub-functionality takes the maximum time. (c) Average Total Proof Size (in KB) for various models. This includes the proof generated during both online and offline phases.</figcaption>
 </div>
