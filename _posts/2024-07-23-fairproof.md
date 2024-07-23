@@ -10,7 +10,7 @@ authors:
 bibliography: blog_fairproof.bib
 paper_url: https://arxiv.org/pdf/2402.12572
 code_url: https://github.com/infinite-pursuits/FairProof/tree/main
-description: ML
+description: Machine learning models are increasingly used in societal applications, yet legal and privacy concerns demand that they very often be kept confidential. Consequently, there is a growing distrust about the fairness properties of these models in the minds of consumers, who are often at the receiving end of model predictions. To this end, we propose \name -- a system that uses Zero-Knowledge Proofs (a cryptographic primitive) to publicly verify the fairness of a model, while maintaining confidentiality. We also propose a fairness certification algorithm for fully-connected neural networks which is befitting to ZKPs and is used in this system. We implement \name in Gnark and demonstrate empirically that our system is practically feasible. Code is available [here](https://github.com/infinite-pursuits/FairProof).
 
 
 ---
