@@ -63,7 +63,7 @@ Empirically we find that the maximum proof generation time is on ~4 min while th
 <div class='l-body' align="center">
 <img class="img-fluid rounded z-depth-1" src="{{ site.baseurl }}/assets/img/2024-07-fairproof/fairproof-results">
 <figcaption style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
-(a) Proof Generation (in mins) and Verification times (in secs) for different models. Offline computations are done in the initial setup phase while Online computations are done for every new query. Verification is only done online, for every query. (b) Breakdown of the proof generation time (in mins) for the data point with the median time. VerifyNeighbor sub-functionality takes the maximum time. (c) Total Proof Size (in KB) for various models. This includes the proof generated during both online and offline phases.</figcaption>
+Results are over 100 randomly sampled points from the test sete. (a) Average Proof Generation (in mins) and Verification times (in secs) for different models. Offline computations are done in the initial setup phase while Online computations are done for every new query. Verification is only done online, for every query. (b) Breakdown of the proof generation time (in mins) for the data point with the median time. VerifyNeighbor sub-functionality takes the maximum time. (c) Average Total Proof Size (in KB) for various models. This includes the proof generated during both online and offline phases.</figcaption>
 </div>
 
 ## Conclusion
