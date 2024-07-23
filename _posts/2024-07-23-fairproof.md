@@ -50,8 +50,7 @@ The fairness metric we use is Local Individual Fairness (IF) and give a simple a
 
 <div class='l-body' align="center">
 <img class="img-fluid rounded z-depth-1" src="{{ site.baseurl }}/assets/img/2024-07-fairproof/fair-unfair">
-<figcaption style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
-Histogram of fairness parameter $\epsilon$ for fair \& unfair models for 100 randomly sampled data points. Fairness parameter values are higher for more fair models. </figcaption>
+<figcaption style="text-align: center; margin-top: 10px; margin-bottom: 10px;"> Histogram of fairness parameter for fair and unfair models for 100 randomly sampled data points. Fairness parameter values are higher for more fair models.</figcaption>
 </div>
 
 #### ZKP for Fairness Certification
@@ -71,5 +70,7 @@ Results are over 100 randomly sampled points from the test sete. (a) Average Pro
 In conclusion, we propose FairProof – a protocol enabling model owners to issue publicly verifiable certificates while ensuring model confidentiality. While our work is grounded in fairness and societal applications, we believe that ZKPs are a general-purpose tool and can be a promising solution for overcoming problems arising out of the need for model confidentiality in other areas/applications as well.
 
 For code check this link : [https://github.com/infinite-pursuits/FairProof](https://github.com/infinite-pursuits/FairProof)
+
 For the paper check this link : [https://arxiv.org/pdf/2402.12572](https://arxiv.org/pdf/2402.12572)
+
 For any enquiries, write to : [cyadav@ucsd.edu](cyadav@ucsd.edu)
