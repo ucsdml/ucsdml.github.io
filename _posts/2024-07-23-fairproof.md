@@ -24,7 +24,7 @@ Setting of FairProof. Customer (which is also the verifier) submits a loan appli
 
 ## Introduction
 
-As machine learning models proliferate in societal applications , it is important to verify that they possess desirable properties such as accuracy, fairness and privacy. Additionally due to IP reasons, models are kept confidential and therefore verification techniques should respect this confidentiality. This brings us to the question of how do we verify properties of a model while maintaining confidentiality.
+As machine learning models proliferate in societal applications , it is important to verify that they possess desirable properties such as accuracy, fairness and privacy. Additionally due to legal and IP reasons, models are kept confidential and therefore verification techniques should respect this confidentiality. This brings us to the question of how do we verify properties of a model while maintaining confidentiality.
 
 The canonical approach to verification is ‘third-party auditing’ <d-cite key="yadav2022learningtheoretic,yan2022active,pentyala2022privfair,soares2023keeping"></d-cite>, wherein an external auditor uses API queries to estimate the value of the property . However, this approach has certain problems including 1) use of auditing datasets which can be manipulated 2) model swapping wherein the model is changed post-audit 3) leaking the model in the process, which loses confidentiality <d-cite key="casper2024black,hamman2023can,fukuchi2019faking, confidant"></d-cite>. 
 
